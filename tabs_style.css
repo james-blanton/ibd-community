@@ -1,0 +1,95 @@
+.full_box_container {
+	position: relative;
+	margin-left: 150px;
+	top:100px;
+}
+
+.full_box_container_2 {
+    margin-right: 50px;
+    top: 50px;
+    float: right;
+}
+
+.full_box_tab {
+    position: absolute;
+    height: 40px;
+    text-align: center;
+    width: 125px;
+    background-color: #05baff;
+    line-height: 39px;
+    color: white;
+    font-size: 22px;
+    font-variant: all-petite-caps;
+    bottom: 0;
+}
+
+.full_box_tab_2 {
+    position: absolute;
+    height: 40px;
+    text-align: center;
+    width: 100%;
+    background-color: #05baff;
+    line-height: 39px;
+    color: white;
+    font-size: 22px;
+    font-variant: all-petite-caps;
+    bottom: 0;
+    margin: 0px;
+    padding: 0px;
+    position: relative;
+}
+
+.full_box {
+    width: 450px;
+    min-height: 220px;
+    background-color: #ffffffd9;
+    border: 2px solid #05baff;
+    border-left: 5px solid #05baff;
+    position: absolute;
+}
+
+.full_box_2 {
+    width: 250px;
+    height: 180px;
+    background-color: #ffffffd9;
+    border: 2px solid #05baff;
+    border-left: 5px solid #05baff;
+}
+
+div.full_box_container > div.full_box_container_2 > div.full_box_2 > ul > li{
+    list-style: none;
+    padding-left: 15px;
+    padding-bottom: 7.9px;
+    padding-top: 9.1px;
+    border-bottom: 1px solid #aaa;
+}
+
+#close > div.full_box_container > div.full_box_container_2 > div.full_box_2 > ul > li:hover {
+    border-left: 4px solid #aaa;
+}
+
+#close > div.full_box_container > div.full_box_container_2 > div.full_box_2 > ul > li:nth-child(5) {
+    border-bottom: 0;
+}
+
+@media only screen and (max-width: 992px) {
+.full_box_container_2 {
+    display: none;
+}
+
+.full_box {
+    width: 100%;
+    min-height: 220px;
+    background-color: #ffffffd9;
+    border: none;
+    border-left: none;
+    position: absolute;
+}
+
+.full_box_container {
+    position: relative;
+    margin-left: 0px;
+    top: 100px;
+}
+
+}
