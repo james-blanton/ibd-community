@@ -1,5 +1,14 @@
 <?php
-	session_start();
+if (session_status() == PHP_SESSION_NONE) {
+	   session_start();
+}
+
+if(!isset($_SESSION['username'])){
+ 	header("Location:../error.php");
+}
+?>
+
+<?php
 	include_once "../includes/dbh.inc.php";
 	$thread_id = $_GET['id'];
 	// redirect user away if they attempt to edit a thread that is not there's in this php block
@@ -19,8 +28,10 @@
 	}
 
 	if($_SESSION['username'] != $the_thread_owner){
+		if($_SESSION['user_privilege'] != "admin"){
 		$path = "../index.php";
 	 	header("Location: $path");
+	 	}
 	}
 ?>
 
@@ -35,21 +46,28 @@
 		<hr/>
 
 		<?php
-
+		define("CATEGORY_ID", $category_id);
 
 		// link to return to the live thread currently being edited
 		echo'
-		<a href="./category.php?id='.$category_id.
+		<a href="./category.php?id='.CATEGORY_ID.
 		'">Return</a><br/><br/>';
 		
 		?>
 
 		<!-- display deletion verification message to use under return link; pass 'yes' or 'no' response back to this page -->
+		<?php 
+		if (isset($_GET['d'])){
+		} else { 
+		?>
 		Are you sure you want to delete your thread?<br>
 		You will be redirected back to the category page after you delete a thread.<br/><br/>
 		<a href = "deletet.php?id=<?php echo $thread_id .'&d=yes'; ?> ">Yes</a>&nbsp;	&nbsp;	&nbsp;
 		<a href = "deletet.php?id=<?php echo $thread_id .'&d=no'; ?> ">No</a>
 		<br/><br/>
+		<?php
+
+		}?>
 
 		<?php
 		// BEGIN block for delete of thread
@@ -58,7 +76,7 @@
 			$delete = $_GET['d']; // variable for whether they wish to delete the thread or not, given a value of "yes" or "no"
 			// BEGIN "if" for user clicking "yes" on the verification of whether they want to delete the thread or not
 			if($delete == 'yes'){ 
-				echo 'Commence delete.'; // meant to  display message to user, but they currently don't get to see this before the page redirects
+				echo 'Commence delete. Click return to navigate back to the category.'; // meant to  display message to user, but they currently don't get to see this before the page redirects
 				$current_thread = $_GET['id'];
 				
 				// BEGIN GRAB CATEGORY ID TO RETURN USER TO AFTER THREAD IS DELETED
@@ -167,7 +185,6 @@
 
 				echo'
 				<b><h1>' . $thread_title . '</h1></b>' .
-				'created by:<br><br> ' .
 				'<br><div class = "user_avatar"></div>' .
 				'<br><a href = "profile.php?id=' .$thread_creator_id.'">'. $thread_creator .'</a>
 				<br>Rank: '. $user_privilege .

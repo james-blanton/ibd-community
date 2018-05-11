@@ -10,6 +10,26 @@
 		<h2>USER PROFILE</h2>
         <hr>
 
+        <?php
+        // database connection file
+        include_once "../includes/dbh.inc.php";
+
+        // get category id from the url for later use
+        // mysql_real_escape causing an error ... 
+        $current_user = $_GET['id']; 
+
+        // display message if user navigates to a profile that doesnt exist, include footer, end page
+        $select_current_thread = "SELECT user_id FROM users WHERE user_id = '$current_user'";
+        $result = mysqli_query($conn, $select_current_thread);
+        $resultCheck = mysqli_num_rows($result);
+        if ($resultCheck < 1){
+            echo 'The user does not exist. Return to forum <a href="index.php" />index</a>.<br/>';
+            include_once "../footer.php";
+            exit();
+        }
+        // end redirect user away from category that does not exist
+        ?>
+
 		<a action="action" onclick="window.history.go(-1); return false;">Return</a><br><br>
 
 		<?php
@@ -46,12 +66,36 @@
         $penpal = $row['penpal'];
         $birthday = $row['birthday'];
         $country = $row['country'];
-        $condition = $row['conditions'];
+        $condition1 = $row['condition1'];
+        $condition2 = $row['condition2'];
+        $condition3 = $row['condition3'];
+        $last_viewed = $row['last_viewed'];
+        $introduction = $row['introduction'];
 		}
 		?>
 
 		<?php echo '<h1>' . $username . '</h1><br>'?>
 
+        <?php
+        $user_id = $_GET['id'];
+        $profile_pic = mysqli_query($conn, "SELECT * FROM profile_pics WHERE user_id = $user_id");
+        
+        while($row = mysqli_fetch_array($profile_pic, MYSQLI_ASSOC)){
+            $profilepic = $row['filename'];
+            $approval = $row['approved'];
+        }
+        ?>
+        <div class = "profile_pic">
+
+        <?php
+        if(isset($approval)){
+            if($approval == true){
+            echo '<img src="../img/user_pics/'.$profilepic.'" >';
+            } else echo '<img src="../img/user_pics/default.jpg" >';
+        } else echo '<img src="../img/user_pics/default.jpg" >';
+        ?>
+
+        </div>
 		<!-- display user information in verticle table -->
         <table id="horizontal" >
             <thead>
@@ -122,30 +166,12 @@
             <tbody>
                 <tr>
                     <td>
-                        <?php 
-                        // using the condition abbreviation from the database
-                        // as the key in the array found in condition.php file
-                        // to find the full name of the condition
-                        if ($conditions_array[$condition] == "\nSELECT OPTION"){
-                            echo "Not provided.";
-                        } else {
-                        echo $conditions_array[$condition];
-                        }
-                        ?> 
+                        <?php echo $condition1; ?> 
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <?php 
-                        // using the country abbreviation from the database
-                        // as the key in the array found in country.php file
-                        // to find the full name of the country
-                        if ($countries[$country] == "\nSELECT OPTION"){
-                            echo "Not provided.";
-                        } else {
-                        echo $countries[$country];
-                        }
-                        ?> 
+                        <?php echo $country; ?> 
                     </td>
                 </tr>
                 <tr>
@@ -163,14 +189,58 @@
                     <td><?php if($penpal==1 ){echo 'Yes';}else{echo 'No';} ?></td>
                 </tr>
                  <tr>
-                    <td><?php echo 'Coming soon.'; ?></td>
+                    <td><?php echo $last_viewed; ?></td>
                 </tr>
             </tbody>
+
+            <thead>
+                <tr>
+                    <th colspan="3">Second Condition</th>
+                </tr>
+                <tr>
+                    <th colspan="3">Third Condition</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <?php echo $condition2; ?> 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <?php echo $condition3; ?> 
+                    </td>
+                </tr>
+            </tbody>
+
         </table>
+
+        <div id = "profile_intro">
+            <b>Introduction:</b>
+            <hr/>
+            <?php echo nl2br(strip_tags(stripcslashes($introduction))); ?> 
+         </div>
 
 	</div>
 </section>
 
+<?php
+// update last user viewed
+
+if(isset($_SESSION['username'])){
+    $viewer = $_SESSION['username'];
+    $sql = "UPDATE users SET last_viewed = ? WHERE user_id = ?";
+    $stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt, $sql)){
+        // failed to update recently viewed
+    } else {
+        mysqli_stmt_bind_param($stmt, "sd", $viewer, $user_id);
+        mysqli_stmt_execute($stmt);
+    }
+}
+
+?>
 
 <?php
    include_once '../footer.php';

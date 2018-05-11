@@ -1,11 +1,19 @@
 <?php
+if (session_status() == PHP_SESSION_NONE) {
+	   session_start();
+}
+
+if(!isset($_SESSION['username'])){
+ 	header("Location:../error.php");
+}
+?>
+
+<?php
    include_once 'country.php';
 ?>
 
 <?php
-	// Start session for all pages
 	// Attempt MySQL server connection
-	session_start();
 	include_once "includes/dbh.inc.php";
 
 	$current_user = $_GET['update'];
@@ -40,6 +48,28 @@
 	<div class="main-wrapper">
 		<div class="inner_padding">
 		<h2>EDIT ACCOUNT</h2>
+		<hr/>
+<?php
+// block for profile pic
+$profile_pic = mysqli_query($conn, "SELECT * FROM profile_pics WHERE user_id = $current_user");
+        
+while($row = mysqli_fetch_array($profile_pic, MYSQLI_ASSOC)){
+	$profilepic = $row['filename'];
+	$approval = $row['approved'];
+}
+?>
+<div class = "profile_pic">
+
+<?php
+if(isset($approval)){
+	if($approval == true){
+		echo '<img src="./img/user_pics/'.$profilepic.'" >';
+	} else echo '<img src="./img/user_pics/default.jpg" >';
+} else echo '<img src="./img/user_pics/default.jpg" >';
+?>
+
+<br/><br/><a href="edit_avatar.php?id=<?php echo $current_user ?>">Edit Profile Pic</a><br/>
+<br/><i>Be aware that for the time being you can only upload a profile picture once and it can't be reverted. Choose wisely.</i><br/><br/>
 
 <?php
 // submit update query if form is submit
@@ -57,20 +87,23 @@ if (isset($_POST['submit'])) {
 		$penpal = htmlspecialchars (mysqli_real_escape_string($conn, $_POST['penpal']));
 		$birthday = htmlspecialchars (mysqli_real_escape_string($conn, $_POST['birthday']));
 		$country = htmlspecialchars (mysqli_real_escape_string($conn, $_POST['country']));
-		$conditions = htmlspecialchars (mysqli_real_escape_string($conn, $_POST['conditions']));
+		$condition1 = htmlspecialchars (mysqli_real_escape_string($conn, $_POST['condition1']));
+		$condition2 = htmlspecialchars (mysqli_real_escape_string($conn, $_POST['condition2']));
+		$condition3 = htmlspecialchars (mysqli_real_escape_string($conn, $_POST['condition3']));
+		$introduction = htmlspecialchars (mysqli_real_escape_string($conn, $_POST['introduction']));
 
 		// error check to make sure form data has been entered
 		if(!empty($first_name) && !empty($last_name) && !empty($email)){
 
 			// begin prepare statement insert to protect against sql injection
-			$query = "UPDATE users SET user_first = ?, user_last = ?, user_email = ?, penpal = ?, birthday = ?, country = ?, conditions = ? WHERE user_id = ?";
+			$query = "UPDATE users SET user_first = ?, user_last = ?, user_email = ?, penpal = ?, birthday = ?, country = ?, condition1 = ?, condition2 = ?, condition3 = ?, introduction = ?  WHERE user_id = ?";
 			$stmt = mysqli_stmt_init($conn);
 
 			if (!mysqli_stmt_prepare($stmt, $query)){
 				echo $message = "Failed to update.";
 			} else {
 				// bind placeholders to data obtained from user submitted info from POST
-				mysqli_stmt_bind_param($stmt, "sssdsssd", $first_name, $last_name, $email, $penpal, $birthday, $country, $conditions, $id);
+				mysqli_stmt_bind_param($stmt, "sssdssssssd", $first_name, $last_name, $email, $penpal, $birthday, $country, $condition1, $condition2, $condition3, $introduction, $id);
 				mysqli_stmt_execute($stmt);
 				
 				// reload variables for display in form
@@ -80,7 +113,10 @@ if (isset($_POST['submit'])) {
 				$penpal = $_POST['penpal'];
 				$birthday = $_POST['birthday'];
 				$country = $_POST['country'];
-				$conditions = $_POST['conditions'];
+				$condition1 = $_POST['condition1'];
+				$condition2 = $_POST['condition2'];
+				$condition3 = $_POST['condition3'];
+				$introduction = $_POST['introduction'];
 
 				echo $message = "Update successful.";
 			}
@@ -100,24 +136,23 @@ if (isset($_GET['update'])) {
 
 	// post method so the data isn't shown in the url
 	while ($row1 = mysqli_fetch_array($query1)) {
-		echo "<form class='form' action='edit_account.php?update=".$update."' method='post'>";
-		echo "<hr/>";
+		echo "<form class='form' style='float:left;' action='edit_account.php?update=".$update."' method='post'>";
 		echo"<input class='input' type='hidden' name='user_id' value='{$row1['user_id']}' />";
 		echo "<br />";
 		echo "<label>" . "First Name:" . "</label>" . "<br />";
-		echo"<input class='input' type='text' name='user_first' value='{$row1['user_first']}' />";
+		echo"<input class='input' type='text' name='user_first' maxlength='35' value='{$row1['user_first']}' />";
 		echo "<font color='red'> ... required.</font><br /><br />";
 		echo "<label>" . "Last Name:" . "</label>" . "<br />";
-		echo"<input class='input' type='text' name='user_last' value='{$row1['user_last']}' />";
+		echo"<input class='input' type='text' name='user_last' maxlength='35' value='{$row1['user_last']}' />";
 		echo "<font color='red'> ... required.</font><br /><br />";
 		echo "<label>" . "Email:" . "</label>" . "<br />";
-		echo "<input class='input' type='text' name='user_email' value='{$row1['user_email']}' />";
+		echo "<input class='input' type='text' name='user_email' maxlength='50' value='{$row1['user_email']}' />";
 		echo "<font color='red'> ... required.</font><br /><br />";
 		echo "<label>" . "Birthday:" . "</label>" . "<br />";
-		echo "<input type='date' name='birthday' value='{$row1['birthday']}'><br /><br />";
+		echo "<input type='date' name='birthday' maxlength='75' value='{$row1['birthday']}'><br /><br />";
 
 		echo "<label>" . "Country:" . "</label>" . "<br />";
-		echo "<select name='country' style='width:300px;'>";
+		echo "<select name='country' maxlength='75' style='width:300px;'>";
 
 		foreach($countries as $key => $value) {
 		echo '<option value="'.$key.'" title="'. htmlspecialchars($value).'" name="country" >'.htmlspecialchars($value).'</option>';
@@ -126,36 +161,36 @@ if (isset($_GET['update'])) {
 
 		echo "<label>" . "Primary condition:" . "</label><br/>";
 		echo "
-		<select name='conditions' style='width:300px;' selected='".$row1['conditions']."'>
-		  <option value='Not Provided.'>SELECT OPTION</option>
-		  <option value='ibsd'>IBS-D (diarrhea predominant)</option>
-		  <option value='ibsc'>IBS-C (constipation predominant)</option>
-		  <option value='ibsa'>IBS-A (alternating diarrhea/constipation)</option>
-		  <option value='ibspi'>IBS-PI (post-infectious)</option>
-		  <option value='pdvibs'>PDV-IBS (post-diverticulitis)</option>
-		  <option value='bipolar'>Bipolar Disorder</option>
-		  <option value='cancer'>Cancer</option>
-		  <option value='chronicc'>Chronic Idiopathic Constipation</option>
-		  <option value='celiac'>Celiac Disease</option>
-		  <option value='fatigue'>Chronic Fatigue Syndrome</option>
-		  <option value='chrones'>Crohns Disease</option>
-		  <option value='depression'>Depression</option>
-		  <option value='anxiety'>Anxiety</option>
-		  <option value='lactose'>Lactose Intolerance</option>
-		  <option value='ocd'>Obsessive Compulsive Disorder</option>
-		  <option value='ptsd'>Post Traumatic Stress Disorder</option>
-		  <option value='colitis'>Ulcerative Colitis</option>
-		</select>";
+		<select name='condition1' maxlength='75' style='width:300px;' selected='".$row1['condition1']."'>";
+   		include 'condition_dropdown.php';
+   		echo "</select>";
+		echo '<br><br>';
+
+		echo "<label>" . "Second condition:" . "</label><br/>";
+		echo "
+		<select name='condition2' maxlength='75' style='width:300px;' selected='".$row1['condition2']."'>";
+   		include 'condition_dropdown.php';
+   		echo "</select>";
+		echo '<br><br>';
+
+		echo "<label>" . "Third condition:" . "</label><br/>";
+		echo "
+		<select name='condition3' maxlength='75' style='width:300px;' selected='".$row1['condition3']."'>";
+   		include 'condition_dropdown.php';
+   		echo "</select>";
 		echo '<br><br>';
 
 		echo "\nSelect Penpal Status: ";
 		echo "
-		<select name='penpal' selected='";if($row1['penpal']==1){echo 'YES';}else{echo 'NO';}echo"'>
+		<select name='penpal' maxlength='75' selected='";if($row1['penpal']==1){echo 'YES';}else{echo 'NO';}echo"'>
 			<option value='1'>Yes</option>
 			<option value='NULL'>No</option>
 		</select>
 		";
 		echo "<br/><br/>";
+
+		echo "<label>" . "Introduction (3,000 characters max):" . "</label>" . "<br />";
+		echo "<textarea type='text' name='introduction' maxlength='3000'  style='width: 100%; height: 300px;'>".strip_tags(nl2br(stripcslashes($row1['introduction'])))."</textarea><br /><br />";
 
 		echo "<input class='submit' type='submit' name='submit' value='update' />";
 		echo "</form>";

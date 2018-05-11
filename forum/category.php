@@ -79,7 +79,7 @@ include_once "../header.php";
 		// echo category title at the top of the page
 		// &#9608 is for a "block" icon next to the category name
 		while($rows = mysqli_fetch_array($results, MYSQLI_ASSOC)){
-			echo '&#9608; &nbsp; &nbsp;<font class = "caps"><b>'.$rows['cat_title'].'</b></font><br><br>'; 
+			echo '<font class = "caps" color="#01a3e0"><b>'.$rows['cat_title'].'</b></font><br><br>'; 
 		}
 ?>
 		<!-- BEGIN HTML headers for the thread information  -->
@@ -99,12 +99,54 @@ include_once "../header.php";
 		<!-- END HTML headers for the thread information  -->
 
 <?php
-		// only attempt to echo threads if query returned threads for the respective category
-		// you need to use a loop with $row here to pull all results with a matching category
-		if(!empty($resultset)){
-		foreach($resultset as $row): // no indentation on this line because the indents are starting to get messy
+		// ** BEGIN PAGINATION AND DISPLAY OF THREADS ** //
+		$results_per_page = 10;
+		$sql = "SELECT * FROM threads WHERE category_id = '$current_category'";
+		// run query
+		$result = mysqli_query($conn, $sql);
+		// determine total number of thread that belong to this category
+		$num_of_result = mysqli_num_rows($result);
+		// get the total number of pages for this specific category
+		$num_of_pages = ceil($num_of_result/$results_per_page);
+		// get current category id
+		$category_id = $_GET['id'];
 
-		// query to count number of posts belonging to each thread
+		// determine page the user is currently on
+		if(!isset($_GET['p'])){
+			$page = 1;
+		} else {
+			$page = $_GET['p'];
+		}
+
+		// determine the sql limit starting number for the results on the displaying page
+		$this_page_first_result = ($page-1)*$results_per_page;
+
+		// query for all thread information with a join to get username and id
+		$sql = "SELECT 
+				a.thread_id,
+				a.thread_title,
+				a.thread_desc,
+				a.thread_creator,
+				a.thread_date,
+				a.total_posts,
+				a.category_id,
+				a.view_counter,
+				a.thread_reply_date,
+				a.locked,
+				b.user_id,
+				b.username
+				FROM threads a, users b
+				WHERE a.thread_creator = b.username
+				AND category_id = '$current_category'
+				ORDER BY a.thread_reply_date DESC
+				LIMIT " . $this_page_first_result . ',' . $results_per_page
+				; 
+
+		// display 5 results of threads per page for each category
+		$result = mysqli_query($conn, $sql);
+		while($row = mysqli_fetch_array($result)){
+
+		// begin code for thread post count
 		$query_posts = "
 		SELECT 
 		a.post_id,
@@ -126,44 +168,49 @@ include_once "../header.php";
 		$post_count = mysqli_num_rows($result_posts);
 		$post_count = $post_count + 1; // need to count the original thread posters message, so we add 1
 
-		// stripcslashes formats output correctly so it doesn't display linebreak \r\n
-		// mb_strimwidth truncates the message at 75 characters
-			echo '
-			<div id = "thread_wrapper">
-				<div id = "thread_container">
+		// end code for thread post count
 
-					<div class = "thread_header">
-						<div class ="thread_title">
-						<a href="thread.php?id=' . $row['thread_id'] . '">'.$row['thread_title'].'</a> 
-						by <a href = "profile.php?id=' .$row['user_id'].'">'.$row['thread_creator'].'</a>
+			echo '
+					<div id = "thread_wrapper">
+						<div id = "thread_container">
+
+							<div class = "thread_header">
+								<div class ="thread_title">
+								<a href="thread.php?id=' . $row['thread_id'] . '">'.$row['thread_title'].'</a> 
+								by <a href = "profile.php?id=' .$row['user_id'].'">'.$row['thread_creator'].'</a>
+								</div>
+							</div>
+
+							<div class = "thread_description">' . stripcslashes(mb_strimwidth($row['thread_desc'], 0, 75, "...")) . 
+							'<div id="category_reply_date">-- Date: '.$row['thread_reply_date'] . '</div></div><br>
+						</div>
+
+						<div class ="thread_posts">
+							'.$post_count.'
+						</div>
+
+						<div class ="thread_views">
+							' .$row['view_counter'].'
 						</div>
 					</div>
-
-					<div class = "thread_description">' . stripcslashes(mb_strimwidth($row['thread_desc'], 0, 75, "...")) . 
-					'<div id="category_reply_date">-- Date: '.$row['thread_reply_date'] . '</div></div><br>
-				</div>
-
-				<div class ="thread_posts">
-					'.$post_count.'
-				</div>
-
-				<div class ="thread_views">
-					' .$row['view_counter'].'
-				</div>
-			</div>
-			';
-		endforeach;
-		} else {
-			// this else is for when the $resultset[] array returns no threads for the category currently being viewed
-			// include the div thread_wrapper so this message floats left
-			echo '<div id = "thread_wrapper">
-			This category has no threads yet.
-			</div>';
+					';
 		}
+		echo '<div id="pagination_links"> PAGE: &nbsp;';
+		// displays links for pagination of threads
+		for($page=1;$page<=$num_of_pages;$page++){
+			echo '<a href="category.php?id=' .$category_id.'&p='. $page . '">'. $page . '</a> &nbsp; &nbsp;';
+		}
+		echo '</div>';
+
+
+
+
 				        
 		?>
 	</div>
 </section>
+
+
 
 
 <?php

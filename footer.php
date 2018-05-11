@@ -36,8 +36,9 @@
 		</div>
 
 		<div id = "terms_of_use">
-			<a href="#">Terms of Use</a><br/>
-			<a href="#">Copyright</a><br/>
+			<?php generateURL('privacy.php','Privacy Policy') ?><br/>
+			<?php generateURL('cookies.php','Cookie Policy') ?><br/>
+			<?php generateURL('disclaimer.php','Disclaimer') ?><br/>
 		</div>
 
 	</div>

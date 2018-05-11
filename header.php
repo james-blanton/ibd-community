@@ -218,8 +218,8 @@ include_once "includes/dbh.inc.php";
 
 							echo '
 							<form action="'.$url.'" method="POST">
-								<input type="text" name="username" placeholder="username">
-								<input type="password" name="password" placeholder="password">
+								<input type="text" name="username" maxlength="35" placeholder="username">
+								<input type="password" name="password" maxlength="70" placeholder="password">
 								<button type="submit" name="submit">Login</button>
 							</form>';
 
@@ -255,6 +255,21 @@ include_once "includes/dbh.inc.php";
 					} 
 					?>
 				</div>
+				
+				<?php 
+				if(isset($_SESSION['user_privilege'])){
+					if($_SESSION['user_privilege'] == "admin"){
+					echo '<div class="nav-username">';
+					if($current_dir == 'forum'){
+						$url= '../admin.php';
+					} else {$url= 'admin.php';}
+				 	echo '<a href="'.$url.'">Admin CP</a>';
+				 	
+				 	echo '</div>';
+
+				 	}
+			 	}
+			 	?>
 
 				<!--DESKTOP NAVIGATION NEGIN medical conditions dropdown -->
 				<div class="dropdown">

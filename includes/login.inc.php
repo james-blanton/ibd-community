@@ -40,6 +40,7 @@ if(isset($_POST['submit'])){
 				$_SESSION['first_name'] = $row['user_first'];
 				$_SESSION['last_name'] = $row['user_last'];
 				$_SESSION['user_email'] = $row['user_email'];
+				$_SESSION['user_privilege'] = $row['user_privilege'];
 				header('Location:../index.php?login=success');
 
 				} // end hashed password check successful

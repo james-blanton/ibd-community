@@ -92,7 +92,7 @@ if (isset($_POST['submit']))
 							$message = "ERROR: Could not able to execute sql. " . mysqli_error($conn);
 						} else {
 							date_default_timezone_set("America/New_York");
-							$date = date("Y-m-d");
+							$date = date('m/d/Y h:i:s a', time());
 							// bind the data to the placeholders in order to prepare for insert in to database
 							mysqli_stmt_bind_param($stmt, "ssssss", $first, $last, $email, $hashed_pass, $username, $date);
 							// run insert 

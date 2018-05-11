@@ -38,11 +38,11 @@ include_once 'header.php';
 		?>
 
 		<form class="signup-form" action="includes/signup.inc.php" method="POST">
-			<input type="text" name="first" placeholder="Firstname"></br>
-			<input type="text" name="last" placeholder="Lastname"></br>
-			<input type="text" name="email" placeholder="Email"></br>
-			<input type="text" name="username" placeholder="Username"></br>
-			<input type="password" name="pass" placeholder="Password"></br>
+			<input type="text" name="first" placeholder="Firstname" maxlength="35"></br>
+			<input type="text" name="last" placeholder="Lastname" maxlength="35"></br>
+			<input type="text" name="email" placeholder="Email" maxlength="50"></br>
+			<input type="text" name="username" placeholder="Username" maxlength="35"></br>
+			<input type="password" name="pass" placeholder="Password" maxlength="70"></br>
 			<button type="submit" name="submit">Sign Up</button>
 		</form>
 		<center>

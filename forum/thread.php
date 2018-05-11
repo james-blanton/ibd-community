@@ -34,6 +34,29 @@ include_once "../header.php";
 		// get thread id from the url
 		$current_thread = $_GET['id'];
 
+		// ** BEGIN PAGINATION AND DISPLAY OF POSTS ** //
+		$results_per_page = 10;
+		$sql = "SELECT * FROM posts WHERE post_thread_id = '$current_thread'";
+		// run query
+		$result = mysqli_query($conn, $sql);
+		// determine total number of thread that belong to this category
+		$num_of_result = mysqli_num_rows($result);
+		// get the total number of pages for this specific category
+		$num_of_pages = ceil($num_of_result/$results_per_page);
+		// get current category id
+		$category_id = $_GET['id'];
+
+		// determine page the user is currently on
+		if(!isset($_GET['p'])){
+			$page = 1;
+			$_GET['p'] = 1;
+		} else {
+			$page = $_GET['p'];
+		}
+
+		// determine the sql limit starting number for the results on the displaying page
+		$this_page_first_result = ($page-1)*$results_per_page;
+
 		//  query for required post info ...
 		//  using the thread ID obtained from the URL and GET method
 		$query_posts = "
@@ -52,7 +75,8 @@ include_once "../header.php";
 		FROM posts a, users b
 		WHERE a.post_creator = b.username
 		AND post_thread_id = '$current_thread'
-		";
+		LIMIT " . $this_page_first_result . ',' . $results_per_page
+		;
 		
 		// run query
 		$result_posts = mysqli_query($conn, $query_posts);
@@ -88,14 +112,6 @@ include_once "../header.php";
 		// run query for thread info on the thread the viewer is currently viewing
 		$result_threads = mysqli_query($conn, $query_thread);
 
-		// for debugging 
-		/*
-		if (!$result_threads) {
-		    printf("Error: %s\n", mysqli_error($conn));
-		    exit();
-		}
-		*/
-
 		//assign thread information to variables
 		while($row = mysqli_fetch_array($result_threads, MYSQLI_ASSOC)){
 		$thread_id = $row['thread_id'];
@@ -111,6 +127,13 @@ include_once "../header.php";
 		$view_counter = $row['view_counter'];
 		}
 
+		// get thread creator profile picture
+		$thread_profilePic = mysqli_query($conn, "SELECT * FROM profile_pics WHERE user_id = $thread_creator_id");
+		while($row = mysqli_fetch_array($thread_profilePic, MYSQLI_ASSOC)){
+            $t_profilepic = $row['filename'];
+            $t_profilepic_approval = $row['approved'];
+        }
+
 		// adds one view to the thread when page refreshes
 		if(isset($view_counter)){	
 		$new_view_count = $view_counter + 1;
@@ -125,31 +148,45 @@ include_once "../header.php";
 		// create post pass thread id
 		echo '<a href = "./create_post.php?id=' . $current_thread . '" >Create Post</a><br><br>';
 
-		// echo original thread post and author's user information
-		echo 
-		'<div class = "thread_info"><div class="padding">';
+		// BEGIN ECHO FIRST POST IN THREAD ONLY IF ON PAGE ONE FROM PAGINATION
+		if($_GET['p'] == 1){
 
-		// only display "edit" link if the active session is that of the user who created the thread
-		if(isset($_SESSION['username'])){
-		if($_SESSION['username'] == $thread_creator){
+			// echo original thread post and author's user information
+			echo 
+			'<div class = "thread_info"><div class="padding">';
+
+			// only display "edit" link if the active session is that of the user who created the thread
+			if(isset($_SESSION['username'])){
+			if($_SESSION['username'] == $thread_creator || $_SESSION['user_privilege'] == "admin"){
+				echo '
+				<div id = "edit_link" style="float:right;">
+				<a href = "edit_thread.php?id=' .$thread_id.'">Edit</a>
+				<a href = "deletet.php?id=' .$thread_id.'&c='.$category_id.'">&nbsp; &nbsp; &nbsp; Delete</a>
+				</div>';
+			}
+			}
+
+			echo
+			$thread_date .'
+			<b><h1>' . $thread_title . '</h1></b>' .
+
+			// profile pic for thread creator
+			'<br><div class = "user_avatar">';
+			if(isset($t_profilepic_approval)){
+	            if($t_profilepic_approval == true){
+	            echo '<img src="../img/user_pics/'.$t_profilepic.'" >';
+	            } else echo '<img src="../img/user_pics/default.jpg" >';
+	        } else echo '<img src="../img/user_pics/default.jpg" >';
 			echo '
-			<div id = "edit_link" style="float:right;">
-			<a href = "edit_thread.php?id=' .$thread_id.'">Edit</a>
-			<a href = "deletet.php?id=' .$thread_id.'&c='.$category_id.'">&nbsp; &nbsp; &nbsp; Delete</a>
-			</div>';
-		}
-		}
+			</div>' .
 
-		echo
-		$thread_date .'
-		<b><h1>' . $thread_title . '</h1></b>' .
-		'created by:<br>' .
-		'<br><div class = "user_avatar"></div>' .
-		'<br><a href = "profile.php?id=' .$thread_creator_id.'">'. $thread_creator .'</a>
-		<br>Rank: '. $user_privilege .
-		'<br>Posts: ' . $poster_postcount .
-		'<br><br>' . nl2br(stripcslashes($thread_desc)) .
-		'</div></div>';
+			'<br><a href = "profile.php?id=' .$thread_creator_id.'">'. $thread_creator .'</a>
+			<br>Rank: '. $user_privilege .
+			'<br>Posts: ' . $poster_postcount .
+			'<br><br>' . nl2br(stripcslashes($thread_desc)) .
+			'</div></div>';
+
+		}// END ECHO FIRST POST IN THREAD ONLY IF ON PAGE ONE 
 
 		// thread reply header text
 		echo 'THREAD REPLIES:<br><br>';
@@ -167,12 +204,19 @@ include_once "../header.php";
 			$user_privilege = $row['user_privilege'];
 			$post_date = $row['post_date'];
 
+			// get post creator profile picture
+			$post_profilePic = mysqli_query($conn, "SELECT * FROM profile_pics WHERE user_id = $post_creator_id");
+			while($row = mysqli_fetch_array($post_profilePic, MYSQLI_ASSOC)){
+	            $p_profilepic = $row['filename'];
+	            $p_profilepic_approval = $row['approved'];
+	        }
+
 			echo '
 			<div class = "response_post_header"><div class="padding">';
 
 			// only display "edit" link if the active session is that of the user who created the post
 			if(isset($_SESSION['username'])){
-				if($_SESSION['username'] == $post_creator){
+				if($_SESSION['username'] == $post_creator || $_SESSION['user_privilege'] == "admin"){
 				echo '
 				<div id = "edit_link" style="float:right;">
 				<a href = "edit_post.php?id=' .$post_id.'&t='.$thread_id.'">Edit</a>
@@ -183,7 +227,15 @@ include_once "../header.php";
 			
 			echo 
 			$post_date.'
-			<br><br><div class = "user_avatar"></div>
+			<br><br><div class = "user_avatar">';
+			if(isset($p_profilepic_approval)){
+	            if($p_profilepic_approval== true){
+	            echo '<img src="../img/user_pics/'.$p_profilepic.'" >';
+	            } else echo '<img src="../img/user_pics/default.jpg" >';
+        	} else echo '<img src="../img/user_pics/default.jpg" >';
+
+			echo '
+			</div>
 			<br><a href = "profile.php?id=' .$post_creator_id.'">'. $post_creator .'</a>
 			<br>Rank: '. $user_privilege .
 			'<br>Posts: '.$post_count.'
@@ -195,6 +247,13 @@ include_once "../header.php";
 		} else {
 			echo 'This thread has no posts yet.';
 		}
+
+		echo '<br/><br/><div id="pagination_links"> PAGE: &nbsp;';
+		// displays links for pagination of threads
+		for($page=1;$page<=$num_of_pages;$page++){
+			echo '<a href="thread.php?id=' .$thread_id.'&p='. $page . '">'. $page . '</a> &nbsp; &nbsp;';
+		}
+		echo '</div>';
 				        
 		?>
 	</div>

@@ -32,8 +32,8 @@ include_once ('header.php');
 		?>
 
 		<form class="signup-form" action="includes/login.inc.php" method="POST"><br/>
-			<input type="text" name="username" placeholder="username"><br/>
-			<input type="password" name="password" placeholder="password"><br/>
+			<input type="text" name="username" maxlength="35" placeholder="username"><br/>
+			<input type="password" name="password" maxlength="70" placeholder="password"><br/>
 			<button type="submit" name="submit">Login</button>
 		</form>
 		</center>

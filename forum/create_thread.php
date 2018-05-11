@@ -1,14 +1,18 @@
+<?php
+if (session_status() == PHP_SESSION_NONE) {
+	   session_start();
+}
+
+if(!isset($_SESSION['username'])){
+ 	header("Location:../error.php");
+}
+?>
 
 <?php
 include_once "../header.php";
 ?>
 
 <?php
-if(!isset($_SESSION['username'])){
-	$path = $_SERVER['DOCUMENT_ROOT'];
-	$path .= "/error.php";
- 	header("Location:$path");
-}
 
 // begin redirect user away from creating a thread for a category that does not exist
 if (isset($_REQUEST['category_id'])){
@@ -108,10 +112,10 @@ if (!empty($_POST['submit'])){
 		<form action="<?php $_SERVER['PHP_SELF'] ?>" method="POST">
 		    <p>
 		        <label for="threadTitle" >Subject:</label><br><br>
-		        <input type="text" name="thread_title" id="threadTitle">
+		        <input type="text" name="thread_title" id="threadTitle" maxlength="60" placeholder="Max 60 characters">
 		    </p><br><br>
 		        <label for="threadDisc">Thread Description:</label><br><br>
-		        <textarea type="textarea" name="thread_desc" id="threadDisc"></textarea>
+		        <textarea type="textarea" name="thread_desc" id="threadDisc" maxlength="20000" onfocus="this.value=''" placeholder="Max 20,000 characters" ></textarea>
 		    </p><br><br>
 		    <input type="submit" name="submit" value="Submit">
 		</form>

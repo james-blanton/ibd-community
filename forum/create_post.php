@@ -1,14 +1,18 @@
+<?php
+if (session_status() == PHP_SESSION_NONE) {
+	   session_start();
+}
+
+if(!isset($_SESSION['username'])){
+ 	header("Location:../error.php");
+}
+?>
 
 <?php
 include_once "../header.php";
 ?>
 
 <?php
-if(!isset($_SESSION['username'])){
-	$path = $_SERVER['DOCUMENT_ROOT'];
-	$path .= "/error.php";
- 	header("Location:$path");
-}
 
 // begin redirect user away from creating a post for a thread that does not exist
 if (isset($_REQUEST['id'])){
@@ -113,7 +117,7 @@ if (!empty($_POST['submit'])){
 			} 
 
 			// link to return to thread
-			$message = "<br/> Return to thread
+			$message = "Return to thread
 			<a href=./thread.php?id=".$thread_id.">here.</a>";
 		}
 		// end prepare statement insert to protect against sql injection
@@ -148,7 +152,7 @@ if (!empty($_POST['submit'])){
 		<form action="<?php $_SERVER['PHP_SELF'] ?>" method="POST">
 		    <p>
 		        <label for="postContent">Post Content:</label><br><br>
-		        <textarea type="textarea" name="post_content" id="postContent" style="width:100%; height: 100px;"></textarea>
+		        <textarea type="textarea" name="post_content" id="postContent" maxlength="20000" style="width:100%; height: 100px;" placeholder="Max 20,000 characters"></textarea>
 		    </p><br><br>
 		    <input type="submit" name="submit" value="Submit">
 		</form>

@@ -1,5 +1,14 @@
 <?php
-	session_start();
+if (session_status() == PHP_SESSION_NONE) {
+	   session_start();
+}
+
+if(!isset($_SESSION['username'])){
+ 	header("Location:../error.php");
+}
+?>
+
+<?php
 	include_once "../includes/dbh.inc.php";
 
 	$current_post = $_GET['id'];
@@ -17,8 +26,10 @@
 	}
 
 	if($_SESSION['username'] != $the_post_owner){
+		if($_SESSION['user_privilege'] != "admin"){
 		$path = "../index.php";
 	 	header("Location: $path");
+	 	}
 	}
 ?>
 
@@ -49,13 +60,13 @@
 		?>
 
 		<!-- display deletion verification message to use under return link; pass 'yes' or 'no' response back to this page -->
+		<?php 
+		if (isset($_GET['d'])){
+		} else { 
+		$thread_id=$_GET['t'];
+		?>
 		Are you sure you want to delete your post?<br>
 		You will be redirected back to the thread after you delete a post.<br/><br/>
-
-		<?php 
-		if (isset($_GET['t'])) {
-		$thread_id = $_GET['t'];
-		?>
 		<a href = "deletep.php?id=<?php echo $current_post .'&d=yes&t='.$thread_id; ?> ">Yes</a>&nbsp;	&nbsp;	&nbsp;
 		<a href = "deletep.php?id=<?php echo $current_post  .'&d=no&t='.$thread_id; ?> ">No</a>
 		<br/><br/>
@@ -68,7 +79,7 @@
 			$delete = $_GET['d']; // variable for whether they wish to delete the post or not, given a value or "yes" or "no"
 			// BEGIN "if" for user clicking "yes" on the verification of whether they want to delete the post or not
 			if($delete == 'yes'){ 
-				echo 'Commence delete.'; // meant to  display message to user, but they currently don't get to see this before the page redirects
+				echo 'Commence delete. '; // meant to  display message to user, but they currently don't get to see this before the page redirects
 				$current_post = $_GET['id'];
 				
 				// BEGIN GRAB THREAD ID TO RETURN USER TO THREAD AFTER DELETE

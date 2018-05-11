@@ -1,7 +1,15 @@
 <?php
-	// Start session for all pages
+if (session_status() == PHP_SESSION_NONE) {
+	   session_start();
+}
+
+if(!isset($_SESSION['username'])){
+ 	header("Location:../error.php");
+}
+?>
+
+<?php
 	// Attempt MySQL server connection
-	session_start();
 	include_once "../includes/dbh.inc.php";
 
 	$current_post = $_GET['id'];
@@ -22,8 +30,10 @@
 	}
 
 	if($_SESSION['username'] != $the_post_owner){
+		if($_SESSION['user_privilege'] != "admin"){
 		$path = "../index.php";
 	 	header("Location: $path");
+	 	}
 	}
 
 ?>
@@ -42,8 +52,8 @@ echo'
 <a href="./thread.php?id=';
 if (isset($_GET['t']))
 {
-$id == $_GET['t'];
-echo $id; // return to the thread that this post belongs to
+$tid = $_GET['t'];
+echo $tid; // return to the thread that this post belongs to
 } 
 echo'">Return</a><br/><br/>';
 
@@ -108,8 +118,8 @@ if(!empty($_POST['post_edit'])) {
 ?>
 
 <form method="post" action="<?php $_PHP_SELF ?>">
-        Message:<br />
-        <textarea name="post_content" rows = "10" /><?php echo strip_tags(nl2br(stripcslashes($post_content))); ?></textarea><br /><br />
+        Message [20,000 characters max]:<br />
+        <textarea name="post_content" id="postContent" maxlength="20000" style="width:100%; height: 100px;"/><?php echo strip_tags(nl2br(stripcslashes($post_content))); ?></textarea><br /><br />
         <input type="submit" name="post_edit" style = "float:left;" value="Submit Edit" />
 </form>
 
