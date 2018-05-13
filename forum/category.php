@@ -195,12 +195,15 @@ include_once "../header.php";
 					</div>
 					';
 		}
-		echo '<div id="pagination_links"> PAGE: &nbsp;';
-		// displays links for pagination of threads
-		for($page=1;$page<=$num_of_pages;$page++){
-			echo '<a href="category.php?id=' .$category_id.'&p='. $page . '">'. $page . '</a> &nbsp; &nbsp;';
+		
+		if($num_of_pages > 1){
+			echo '<div id="pagination_links"> PAGE: &nbsp;';
+			// displays links for pagination of threads
+			for($page=1;$page<=$num_of_pages;$page++){
+				echo '<a href="category.php?id=' .$category_id.'&p='. $page . '">'. $page . '</a> &nbsp; &nbsp;';
+			}
+			echo '</div>';
 		}
-		echo '</div>';
 
 
 

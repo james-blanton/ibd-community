@@ -248,13 +248,14 @@ include_once "../header.php";
 			echo 'This thread has no posts yet.';
 		}
 
-		echo '<br/><br/><div id="pagination_links"> PAGE: &nbsp;';
-		// displays links for pagination of threads
-		for($page=1;$page<=$num_of_pages;$page++){
-			echo '<a href="thread.php?id=' .$thread_id.'&p='. $page . '">'. $page . '</a> &nbsp; &nbsp;';
-		}
-		echo '</div>';
-				        
+		if($num_of_pages > 1){
+			echo '<br/><br/><div id="pagination_links"> PAGE: &nbsp;';
+			// displays links for pagination of threads
+			for($page=1;$page<=$num_of_pages;$page++){
+				echo '<a href="thread.php?id=' .$thread_id.'&p='. $page . '">'. $page . '</a> &nbsp; &nbsp;';
+			}
+			echo '</div>';
+		}	        
 		?>
 	</div>
 </section>
