@@ -75,7 +75,7 @@ $user_id = $_GET['id'];
 									} else {
 									    header("Location:edit_avatar.php?id=".$user_id."&msg=failed");
 									}
-								} else { header("Location:edit_avatar.php?id=".$user_id."&msg=wrong_size");} // end query to ensure file name doesnt exist already
+								} else { header("Location:edit_avatar.php?id=".$user_id."&msg=wrong_size");}
 							} else { header("Location:edit_avatar.php?id=".$user_id."&msg=name_exists");}
 						} else { header("Location:edit_avatar.php?id=".$user_id."&msg=file_size");}
 					} else { header("Location:edit_avatar.php?id=".$user_id."&msg=error"); }

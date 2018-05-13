@@ -170,32 +170,34 @@ include_once "../header.php";
 
 		// end code for thread post count
 
-			echo '
+		?>
 					<div id = "thread_wrapper">
 						<div id = "thread_container">
 
 							<div class = "thread_header">
 								<div class ="thread_title">
-								<a href="thread.php?id=' . $row['thread_id'] . '">'.$row['thread_title'].'</a> 
-								by <a href = "profile.php?id=' .$row['user_id'].'">'.$row['thread_creator'].'</a>
+
+								<a href="thread.php?id=<?php echo $row['thread_id']; ?>"><?php echo $row['thread_title']; ?></a> 
+								by <a href = "profile.php?id=<?php echo $row['user_id']; ?>"><?php echo $row['thread_creator']; ?></a>
 								</div>
 							</div>
 
-							<div class = "thread_description">' . stripcslashes(mb_strimwidth($row['thread_desc'], 0, 75, "...")) . 
-							'<div id="category_reply_date">-- Date: '.$row['thread_reply_date'] . '</div></div><br>
+							<div class = "thread_description"><?php echo stripcslashes(mb_strimwidth($row['thread_desc'], 0, 75, "...")); ?>
+							<div id="category_reply_date">-- Date: <?php echo $row['thread_reply_date'] ?></div></div><br>
 						</div>
 
 						<div class ="thread_posts">
-							'.$post_count.'
+							<?php echo $post_count; ?>
 						</div>
 
 						<div class ="thread_views">
-							' .$row['view_counter'].'
+							<?php echo $row['view_counter']; ?>
 						</div>
 					</div>
-					';
+					
+		<?php
 		}
-		
+
 		if($num_of_pages > 1){
 			echo '<div id="pagination_links"> PAGE: &nbsp;';
 			// displays links for pagination of threads

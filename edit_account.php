@@ -136,64 +136,71 @@ if (isset($_GET['update'])) {
 
 	// post method so the data isn't shown in the url
 	while ($row1 = mysqli_fetch_array($query1)) {
-		echo "<form class='form' style='float:left;' action='edit_account.php?update=".$update."' method='post'>";
-		echo"<input class='input' type='hidden' name='user_id' value='{$row1['user_id']}' />";
-		echo "<br />";
-		echo "<label>" . "First Name:" . "</label>" . "<br />";
-		echo"<input class='input' type='text' name='user_first' maxlength='35' value='{$row1['user_first']}' />";
-		echo "<font color='red'> ... required.</font><br /><br />";
-		echo "<label>" . "Last Name:" . "</label>" . "<br />";
-		echo"<input class='input' type='text' name='user_last' maxlength='35' value='{$row1['user_last']}' />";
-		echo "<font color='red'> ... required.</font><br /><br />";
-		echo "<label>" . "Email:" . "</label>" . "<br />";
-		echo "<input class='input' type='text' name='user_email' maxlength='50' value='{$row1['user_email']}' />";
-		echo "<font color='red'> ... required.</font><br /><br />";
-		echo "<label>" . "Birthday:" . "</label>" . "<br />";
-		echo "<input type='date' name='birthday' maxlength='75' value='{$row1['birthday']}'><br /><br />";
 
-		echo "<label>" . "Country:" . "</label>" . "<br />";
-		echo "<select name='country' maxlength='75' style='width:300px;'>";
+		?>
 
+		<form class='form' style='float:left;' action='edit_account.php?update<?php echo "=".$update; ?>' method='post'>
+		<input class='input' type='hidden' name='user_id' value='<?php echo $row1["user_id"]; ?>' />
+		<br />
+		<label>First Name:</label><br />
+		<input class='input' type='text' name='user_first' maxlength='35' value='<?php echo $row1["user_first"]; ?>' />
+		<font color='red'> ... required.</font><br /><br />
+		<label>Last Name:</label><br />
+		<input class='input' type='text' name='user_last' maxlength='35' value='<?php echo $row1["user_last"]; ?>' />
+		<font color='red'> ... required.</font><br /><br />
+		<label>Email:</label><br />
+		<input class='input' type='text' name='user_email' maxlength='50' value='<?php echo $row1["user_email"]; ?>' />
+		<font color='red'> ... required.</font><br /><br />
+		<label>Birthday:</label><br />
+		<input type='date' name='birthday' maxlength='75' value='<?php echo $row1["birthday"]; ?>' /><br /><br />
+
+		<label>Country:</label><br />
+		<select name='country' maxlength='75' style='width:300px;'>
+
+		<?php
 		foreach($countries as $key => $value) {
 		echo '<option value="'.$key.'" title="'. htmlspecialchars($value).'" name="country" >'.htmlspecialchars($value).'</option>';
 		}
 		echo "</select><br /><br />";
+		?>
 
-		echo "<label>" . "Primary condition:" . "</label><br/>";
-		echo "
-		<select name='condition1' maxlength='75' style='width:300px;' selected='".$row1['condition1']."'>";
-   		include 'condition_dropdown.php';
-   		echo "</select>";
-		echo '<br><br>';
+		<label>Primary condition:</label><br />
+		
+		<select name='condition1' maxlength='75' style='width:300px;' selected="<?php echo $row1['condition1']; ?>">
+   		<?php include 'condition_dropdown.php'; ?>
+   		</select>
+		<br /><br />
 
-		echo "<label>" . "Second condition:" . "</label><br/>";
-		echo "
-		<select name='condition2' maxlength='75' style='width:300px;' selected='".$row1['condition2']."'>";
-   		include 'condition_dropdown.php';
-   		echo "</select>";
-		echo '<br><br>';
+		<label>Second condition:</label><br />
+		
+		<select name='condition2' maxlength='75' style='width:300px;' selected='<?php echo $row1['condition2']; ?>'>
+   		<?php include 'condition_dropdown.php'; ?>
+   		</select>
+		<br /><br />
 
-		echo "<label>" . "Third condition:" . "</label><br/>";
-		echo "
-		<select name='condition3' maxlength='75' style='width:300px;' selected='".$row1['condition3']."'>";
-   		include 'condition_dropdown.php';
-   		echo "</select>";
-		echo '<br><br>';
+		<label>Third condition:</label><br />
+		
+		<select name='condition3' maxlength='75' style='width:300px;' selected="<?php echo $row1['condition3']; ?>">
+   		<?php include 'condition_dropdown.php'; ?>
+   		</select>
+		<br /><br />
 
-		echo "\nSelect Penpal Status: ";
-		echo "
-		<select name='penpal' maxlength='75' selected='";if($row1['penpal']==1){echo 'YES';}else{echo 'NO';}echo"'>
+		Select Penpal Status:
+
+		<select name='penpal' maxlength='75' selected='<?php if($row1['penpal']==1){echo 'YES';}else{echo 'NO';} ?>'>
 			<option value='1'>Yes</option>
 			<option value='NULL'>No</option>
 		</select>
-		";
-		echo "<br/><br/>";
+		
+		<br /><br />
 
-		echo "<label>" . "Introduction (3,000 characters max):" . "</label>" . "<br />";
-		echo "<textarea type='text' name='introduction' maxlength='3000'  style='width: 100%; height: 300px;'>".strip_tags(nl2br(stripcslashes($row1['introduction'])))."</textarea><br /><br />";
+		<label>Introduction (3,000 characters max):</label><br />
+		<textarea type='text' name='introduction' maxlength='3000' style='width: 100%; height: 300px;' ><?php echo strip_tags(nl2br(stripcslashes($row1['introduction']))) ?></textarea><br /><br />
 
-		echo "<input class='submit' type='submit' name='submit' value='update' />";
-		echo "</form>";
+		<input class='submit' type='submit' name='submit' value='update' />
+		</form>
+
+		<?php
 	}
 }
 ?>
