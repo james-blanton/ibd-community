@@ -98,7 +98,7 @@ if(!empty($_POST['post_edit'])) {
 		
 		$post_id = $_GET['id'];
 		// injection protection escape input
-		$post_content = mysqli_real_escape_string($conn, $_POST['post_content']);
+		$post_content = htmlspecialchars (mysqli_real_escape_string($conn, $_POST['post_content']));
 		
 		// begin prepare statement insert to protect against sql injection
 		$sql = "UPDATE posts SET post_content = ? WHERE post_id = ?";

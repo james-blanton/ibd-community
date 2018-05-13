@@ -103,8 +103,8 @@ if(!empty($_POST['thread_edit'])) {
 		
 		$thread_id = $_GET['id'];
 		// injection protection escape input
-		$thread_title = mysqli_real_escape_string($conn, $_POST['thread_title']);
-		$thread_desc = mysqli_real_escape_string($conn, $_POST['thread_desc']);
+		$thread_title = htmlspecialchars (mysqli_real_escape_string($conn, $_POST['thread_title']));
+		$thread_desc = htmlspecialchars (mysqli_real_escape_string($conn, $_POST['thread_desc']));
 		
 		// begin prepare statement insert to protect against sql injection
 		$sql = "UPDATE threads SET thread_title = ?, thread_desc = ? WHERE thread_id = ?";
