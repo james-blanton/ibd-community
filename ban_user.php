@@ -13,9 +13,13 @@ if(!isset($_SESSION['username'])){
 
 // check if logged in user is an admin or mod
 // redirect to error page if they are not
-if($_SESSION['user_privilege'] != "admin" || $_SESSION['user_privilege'] != "mod"){
- 	header("Location:error.php");
- 	exit();
+if ($_SESSION['user_privilege'] == "admin" || $_SESSION['user_privilege'] == "mod"){
+	// let admin or mod access any account 
+} else {
+	// exclude anyone who is not the account owner, an admin, or a mod from editing the account
+	// redirect user to error page if they try to account they don't own
+	$path = "error.php";
+	 header("Location: $path");
 }
 ?>
 

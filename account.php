@@ -124,14 +124,14 @@ if (isset($_POST['submit'])) {
 	$condition2 = htmlspecialchars (mysqli_real_escape_string($conn, $_POST['condition2']));
 	$condition3 = htmlspecialchars (mysqli_real_escape_string($conn, $_POST['condition3']));
 	$introduction = htmlspecialchars (mysqli_real_escape_string($conn, $_POST['introduction']));
-
+	$user_privilege = htmlspecialchars (mysqli_real_escape_string($conn, $_POST['user_privilege']));
 	// error check to make sure form data has been entered for a select few variables
 	// this fields are marked as 'required' to the user
 	if(!empty($first_name) && !empty($last_name) && !empty($email)){
 
 		// begin prepare statement insert to protect against sql injection
 		// query
-		$query = "UPDATE users SET user_first = ?, user_last = ?, user_email = ?, penpal = ?, birthday = ?, country = ?, condition1 = ?, condition2 = ?, condition3 = ?, introduction = ?  WHERE user_id = ?";
+		$query = "UPDATE users SET user_first = ?, user_last = ?, user_email = ?, penpal = ?, birthday = ?, country = ?, condition1 = ?, condition2 = ?, condition3 = ?, introduction = ?, user_privilege = ?  WHERE user_id = ?";
 		$stmt = mysqli_stmt_init($conn);
 
 		if (!mysqli_stmt_prepare($stmt, $query)){
@@ -139,7 +139,7 @@ if (isset($_POST['submit'])) {
 		} else {
 			// bind placeholders to data obtained from user submitted info from POST
 			// i = integer / d = double / s = string
-			mysqli_stmt_bind_param($stmt, "sssissssssi", $first_name, $last_name, $email, $penpal, $birthday, $country, $condition1, $condition2, $condition3, $introduction, $id);
+			mysqli_stmt_bind_param($stmt, "sssisssssssi", $first_name, $last_name, $email, $penpal, $birthday, $country, $condition1, $condition2, $condition3, $introduction, $user_privilege, $id);
 			mysqli_stmt_execute($stmt);
 				
 			// reload variables for display in form once the update is complete
@@ -153,6 +153,7 @@ if (isset($_POST['submit'])) {
 			$condition2 = $_POST['condition2'];
 			$condition3 = $_POST['condition3'];
 			$introduction = $_POST['introduction'];
+			$user_privilege = $_POST['user_privilege'];
 
 			echo $message = "Update successful.";
 		}
@@ -238,6 +239,21 @@ if (isset($_GET['update'])) {
 
 		<label>Introduction (3,000 characters max):</label><br />
 		<textarea type='text' name='introduction' maxlength='3000' style='width: 100%; height: 300px;' ><?php echo strip_tags(nl2br(stripcslashes($row1['introduction']))) ?></textarea><br /><br />
+
+		<?php
+		// check if logged in user is an admin
+		// if they are not, then do not provide them with the option to change privileges
+		if($_SESSION['user_privilege'] == "admin"){
+			?>
+		<label>User Privilege:</label><br />
+		 <select name='user_privilege' maxlength='75' selected='<?php echo $row1['user_privilege'];?>'>
+			<option value='<?php echo $row1['user_privilege'];?>'><?php echo $row1['user_privilege'];?></option>
+			<option value='mod'>mod</option>
+			<option value='basic'>basic</option>
+		</select><br /><br />
+		<?php
+		}
+		?>
 
 		<input class='submit' type='submit' name='submit' value='update' />
 		</form>

@@ -186,7 +186,7 @@ include_once "../header.php";
 
 			// only display edit / delete link if the active session is that of the user who created the thread, an admin, or a forum moderator
 			if(isset($_SESSION['username'])){
-			if($_SESSION['username'] == $thread_creator || $_SESSION['user_privilege'] == "admin"){
+			if($_SESSION['username'] == $thread_creator || $_SESSION['user_privilege'] == "admin"  || $_SESSION['user_privilege'] == "mod" ){
 				echo '
 				<div class = "edit_link">
 				<a href = "edit_thread.php?id=' .$thread_id.'">Edit</a>
@@ -260,7 +260,7 @@ include_once "../header.php";
 
 			// only display edit / delete link if the active session is that of the user who created the post, an admin, or a forum moderator
 			if(isset($_SESSION['username'])){
-				if($_SESSION['username'] == $post_creator || $_SESSION['user_privilege'] == "admin"){
+				if($_SESSION['username'] == $thread_creator || $_SESSION['user_privilege'] == "admin"  || $_SESSION['user_privilege'] == "mod" ){
 				echo '
 				<div class = "edit_link">
 				<a href = "edit_post.php?id=' .$post_id.'&t='.$thread_id.'">Edit</a>

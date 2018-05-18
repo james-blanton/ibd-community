@@ -41,10 +41,14 @@ if(is_numeric($_GET['id']) == FALSE){
 
 	// if the user attempting to access the page is not the creator of the post,
 	// an admin or a forum moderator, then direct them away from this page.
-	if($_SESSION['username'] != $the_post_owner){
-		if($_SESSION['user_privilege'] != "admin" || $_SESSION['user_privilege'] != "mod"){
+	if($_SESSION['username'] == $the_post_owner){
+	}
+	elseif($_SESSION['user_privilege'] == "admin"){
+	}
+	elseif($_SESSION['user_privilege'] == "mod"){
+	}
+	else{
 	 	header("Location: ../error.php");
-	 	}
 	}
 ?>
 
