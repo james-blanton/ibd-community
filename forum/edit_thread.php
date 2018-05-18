@@ -59,9 +59,9 @@ include_once "../header.php";
 // url to return to the thread
 echo'
 <a href="./thread.php?id=';
-if (isset($thread_id))
+if (isset($current_thread))
 {
-$id = $thread_id;
+$id = $current_thread;
 echo $id; // return to the thread 
 } 
 echo'">Return</a><br/><br/>';
