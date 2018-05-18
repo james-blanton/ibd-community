@@ -8,7 +8,7 @@
 		<hr>
 
 		<?php
-		// database connection file
+		// Attempt MySQL server connection
 		include_once "../includes/dbh.inc.php";
 
 		// Check connection
@@ -16,11 +16,13 @@
 		    die("Connection failed: " . $conn->connect_error);
 		} 
 
+		// query to get forum category information
 		$sql = "SELECT cat_id, cat_title, cat_desc, locked FROM category"; 
 		$result = $conn->query($sql);
 
+		// check if category list was returned, display error if it wasn't
 		if ($result->num_rows > 0) {
-		    // output data of each row
+		    // output data for each category row
 		    while($row = $result->fetch_assoc()) {
 			// assign category information for each row to variables
 			$cat_id = $row['cat_id'];
@@ -28,12 +30,18 @@
 			$cat_desc = $row['cat_desc']; 
 			$locked = $row['locked'];
 
-			// count the numbr of existing threads that pertain to each category
+			// Count the numbr of existing threads that pertain to each category;
 			// each thread is asssigned the id of the category to which it belongs
-			// when the thread is submitted in to the database
-			$query = "SELECT thread_id FROM threads WHERE category_id = $cat_id";
+			// when the thread is submitted in to the database.
+			// Threads can be marked as deleted, so don't count any deleted threads in the total.
+			$query = "SELECT thread_id FROM threads WHERE category_id = $cat_id AND deleted != 1";
 			$result_threads = mysqli_query($conn, $query);
-			$total_threads = mysqli_num_rows($result_threads); 
+
+			if($result_threads === 0){
+				$total_threads = 0;
+			} else {
+				$total_threads = mysqli_num_rows($result_threads); 
+			}
 
 			// each category info for each cycle of the foreach loop
 			echo '
@@ -44,7 +52,7 @@
 			</div>
 			<br>';
 			}
-		}
+		} else { echo 'The forum is currently unavailable for viewing.'; }
 		
 		?>
 	</div>

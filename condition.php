@@ -1,4 +1,10 @@
 <?php
+// this is a list of medical conditions currently given to the user to select from on their profile page
+// the file will be used as options in an html form dropdown menu:
+
+// columns to the left of the arrow function => are the array keys
+// this array is fed in to a list of dropdown options in a loop
+// check condition_dropdown.php i use that file more often
 $conditions_array = array(
 "Not Provided." => "\nSELECT OPTION",
 "ibsd" => "IBS-D (diarrhea predominant)",

@@ -1,47 +1,47 @@
 <?php
+// set session if one isn't already set
 if (session_status() == PHP_SESSION_NONE) {
-	   session_start();
+		session_start();
 }
 
+// check if user is logged in
+// redirect to error page if they are not
 if(!isset($_SESSION['username'])){
- 	header("Location:../error.php");
+ 	header("Location:error.php");
 }
-?>
-
-<?php
-   include_once 'country.php';
 ?>
 
 <?php
 	// Attempt MySQL server connection
 	include_once "includes/dbh.inc.php";
 
+	// get user id passed in url 
+	// ensure  that user id passed in url matches the user id of the active session
 	$current_user = $_GET['id'];
-	// redirect user away if they attempt to edit an account that is not theirs
 	$update_user = mysqli_query($conn, "
 	SELECT 
 	user_id
 	FROM users
 	WHERE user_id = $current_user
 	");
-	// run query
-	//$the_post_owner = mysqli_query($conn, $post_owner);
 	 
-	// get the username for the thread owner        
+	// fetch results or query and place user id in to a variable      
 	while($row = mysqli_fetch_array($update_user, MYSQLI_ASSOC)){
 		$the_user = $row['user_id'];
 	}
 
+	// redirect user away if they're attempting to edit
+	// an avatar for an account that is not theirs
 	if($_SESSION['user_id'] != $the_user){
-		$path = "index.php";
-	 	header("Location: $path");
+	 	header("Location: error.php");
 	}
 
 ?>
 
 <?php
-   $path = "header.php";
-   include_once $path;
+	// include universal header file
+	$path = "header.php";
+	include_once $path;
 ?>
 
 <section class="main-container">
@@ -52,6 +52,8 @@ if(!isset($_SESSION['username'])){
 		<a href="edit_account.php?update=<?php echo $current_user ?>">Return to profile</a><br/><br/>
 
 <?php
+// upload_img.php (the file that processes the form for avatar / profile image submission)
+// gives feeback to this file alerting the user if the avatar / profile image upload failed
 if(isset($_GET['msg'])){
 	if($_GET['msg']=="success"){
 		echo "Image upload successful. Awaiting approval.<br/><br/>";
@@ -84,7 +86,11 @@ if(isset($_GET['msg'])){
 ?>
 
 <?php
-// block for profile pic
+// this small php query checks to see if the user currently has a profile image entry in the datbase table
+// this database contains the following rows: id (primary key), filename ...
+// (what the file name became after upload_img.php renamed the file to a unique name),
+// the unique user_id  for the user who submitted the image, an approved / unapproved boolean and 
+// and upload date
 $profile_pic = mysqli_query($conn, "SELECT * FROM profile_pics WHERE user_id = $current_user");
         
 while($row = mysqli_fetch_array($profile_pic, MYSQLI_ASSOC)){
@@ -92,27 +98,24 @@ while($row = mysqli_fetch_array($profile_pic, MYSQLI_ASSOC)){
 	$approval = $row['approved'];
 }
 ?>
-<div class = "profile_pic">
 
-<?php
-if(isset($approval)){
-	if($approval == true){
-		echo '<img src="./img/user_pics/'.$profilepic.'" >';
+<div class = "profile_pic">
+	<?php
+	// if the current profile picture / avatar image has been approved by admins / mods,
+	// then go ahead and display it above the form for submitting a new image
+	// else display the default profile picture file
+	if(isset($approval)){
+		if($approval == true){
+			echo '<img src="./img/user_pics/'.$profilepic.'" >';
+		} else echo '<img src="./img/user_pics/default.jpg" >';
 	} else echo '<img src="./img/user_pics/default.jpg" >';
-} else echo '<img src="./img/user_pics/default.jpg" >';
-?>
+	?>
+</div>
 
 <form action="upload_img.php?id=<?php echo $_SESSION['user_id'] ?>" method="POST" enctype="multipart/form-data">
-	<input type="file" name="file"><br/>
+	<input type="file" name="file" style="padding:0px;"><br/><br/>
 	<button type="submit" name="submit">UPLOAD</button>
 </form>
-
-</div> <!-- end profile pic div-->
-
-
-
-
-
 
 <?php
    $path = 'footer.php';

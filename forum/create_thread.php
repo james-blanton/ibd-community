@@ -1,39 +1,50 @@
 <?php
+// set session if one isn't already set
 if (session_status() == PHP_SESSION_NONE) {
-	   session_start();
+	session_start();
 }
 
+// check if user is logged in
+// redirect to error page if they are not
 if(!isset($_SESSION['username'])){
  	header("Location:../error.php");
 }
 ?>
 
 <?php
+// this php block redirects the user away from creating a thread for a category that does not exist
+if (isset($_GET['category_id'])){
+	// Attempt MySQL server connection
+	include '../includes/dbh.inc.php';
+
+	// get the category id that we wish to place this new thread in from the url
+	// typecast for security
+	$category_id = (int)$_GET['category_id'];
+
+	// quey to obtain the category information using the category id obtained from the url
+	$select_current_category = "SELECT cat_id FROM category WHERE cat_id = '$category_id'";
+	// execute query
+	$result = mysqli_query($conn, $select_current_category);
+	// count how many rows were returned by the query
+	$resultCheck = mysqli_num_rows($result);
+
+	// redirect user if they try and create a thread for a category that does not exist
+	// aka the query returned no results
+	if ($resultCheck != 1){
+		$path = "../error.php";
+		header("Location: $path");
+	}
+}
+?>
+
+<?php
+// include universal header file
 include_once "../header.php";
 ?>
 
 <?php
-
-// begin redirect user away from creating a thread for a category that does not exist
-if (isset($_REQUEST['category_id'])){
-	$category_id = $_REQUEST['category_id'];
-
-	// get current category using the category id obtained from the url
-	$select_current_category = "SELECT cat_id FROM category WHERE cat_id = '$category_id'";
-	$result = mysqli_query($conn, $select_current_category);
-	$resultCheck = mysqli_num_rows($result);
-
-	// redirect user if they try and thread for a category that does not exist
-	if ($resultCheck < 1){
-		$path = $_SERVER['DOCUMENT_ROOT'];
-		$path .= "/error.php";
-		header("Location: $path");
-	}
-}
-// end redirect user away from creating a thread for a category that does not exist
-
-//  handle create new thread form submission START
-if (!empty($_POST['submit'])){
+//  if the form to create a thread has been submitted, then run this block of code
+if (isset($_POST['submit'])){
 
 	// Attempt MySQL server connection
 	include '../includes/dbh.inc.php';
@@ -42,27 +53,26 @@ if (!empty($_POST['submit'])){
 	if($conn === false){
 	    die("ERROR: Could not connect. " . mysqli_connect_error());
 	}
-	
-	// date & time formatting for insert
-	$d=strtotime("10:30pm April 15 2014");
 
-	// injection protection escape input
+	// sql injection / xss attack prevention by escaping input sent by form submit
 	$thread_title = htmlspecialchars (mysqli_real_escape_string($conn, $_REQUEST['thread_title']));
 	$thread_desc = htmlspecialchars (mysqli_real_escape_string($conn, $_REQUEST['thread_desc']));
-	$thread_creator = $_SESSION['username']; // do not real_escape_string this
+	$thread_creator = $_SESSION['username']; 
 	$last_user_posted = $_SESSION['username'];
+	date_default_timezone_set('US/Eastern');
 	$thread_date = date('Y-m-d H:i:s');
 	$thread_reply_date = date('Y-m-d H:i:s');
 
-	// this kind of error handle is now required by newer versions of php
-	// or else you will get an error of "Notice: Undefined index: category_id"
-	if (isset($_REQUEST['category_id'])){
-		$category_id = $_REQUEST['category_id']; // obtained the category id number from the url
+	// obtained the category id number from the url
+	// typecast for security purposes
+	if (isset($_GET['category_id'])){
+		$category_id = (int)$_GET['category_id']; 
 	} else {
 		$message = "No category ID obtained";
 	}
-	 
-	if (!empty($thread_title || $thread_desc)){ // do not let user submit if input fields are empty
+	
+	// do not let user submit if input fields are empty
+	if (!empty($thread_title || $thread_desc)){
 
 		// begin prepare statement insert to protect against sql injection
 		$sql = "INSERT INTO threads (thread_title, thread_desc, thread_creator, thread_date, thread_reply_date, last_user_posted, category_id) VALUES (?, ?, ?, ?, ?, ?, ?);";
@@ -70,37 +80,36 @@ if (!empty($_POST['submit'])){
 		if(!mysqli_stmt_prepare($stmt, $sql)){
 			$message = "ERROR: Could not able to execute sql. " . mysqli_error($conn);
 		} else {
-			// bind the data to the placeholders in order to prepare for insert in to database
+			// bind placeholders to data obtained from user submitted info from POST
+			// i = integer / d = double / s = string
 			mysqli_stmt_bind_param($stmt, "sssssss", $thread_title, $thread_desc, $thread_creator, $thread_date, $thread_reply_date, $last_user_posted, $category_id);
 			// run insert execution
 			mysqli_stmt_execute($stmt);
 
-			// This is REALLY cool. It lets me grab the url for the thread that was just created.
+			// Grab the id for the thread that was just inserted and use it to direct the user to the new thread.
 			$last_id = $conn->insert_id;
 			
 			$message = "Thread created successfully. Visit new thread <a href='./thread.php?id=".$last_id."'/>HERE</a>.";
 		}
-		// begin prepare statement insert to protect against sql injection
 
 		// close connection
 		mysqli_close($conn);
 	} else { $message = "Failed to submit thread.";}
+// user did not enter data in to the form
+} else $message = "Please enter thread information.";
 
-} else $message = "Please enter thread information."; // for when the user presses submit without entering thread information
-//  handle create new thread form submission END
 ?>
 
-<!-- content actually shown to the user -->
 <section class="main-container">
 	<div class="main-wrapper">
 		<div class="inner_padding">
 		<h2>CREATE THREAD</h2>
 		<hr>
-
+		<?php // obtained the category id number from the url ... returns user to the category they were on when they clicked 'create thread' ?>
 		<a href="./category.php?id=<?php 
 		if (isset($_REQUEST['category_id'])){
 		$category_id = $_REQUEST['category_id'];
-		echo $category_id; // obtained the category id number from the url ... returns user to the category they were on when they clicked 'create thread'
+		echo $category_id;
 		} ?>">Back</a><br/><br/>
 
 		<?php

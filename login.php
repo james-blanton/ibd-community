@@ -1,5 +1,5 @@
 <?php
-// This file is for logging in on mobile devices, seeing how I didn't want to include the login form in the dropdown menu at the top while  the browser is at mobile scale
+// This file is for logging in on mobile devices, seeing how I didn't want to include the login form in the dropdown menu at the top while  the browser is at mobile scale. You are also redirected to this file if your login attempt fails while using the form found in the universal header displayed at the top of each page.
 
 include_once ('header.php');
 ?>

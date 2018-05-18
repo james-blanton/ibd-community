@@ -1,6 +1,9 @@
 <?php
+    // file includes list of countries in an array
     include_once "../country.php";
+    // file includes list of conditions in an array
     include_once "../condition.php";
+    // include universal header file
     include_once "../header.php";
 ?>
 
@@ -11,23 +14,29 @@
         <hr>
 
         <?php
-        // database connection file
+        // Attempt MySQL server connection
         include_once "../includes/dbh.inc.php";
 
         // get category id from the url for later use
-        // mysql_real_escape causing an error ... 
-        $current_user = $_GET['id']; 
+        // typecast data obtained from url for inject protection
+        $current_user = (int)$_GET['id']; 
 
         // display message if user navigates to a profile that doesnt exist, include footer, end page
         $select_current_thread = "SELECT user_id FROM users WHERE user_id = '$current_user'";
+        // run query
         $result = mysqli_query($conn, $select_current_thread);
+        // count number of rows returned by query
         $resultCheck = mysqli_num_rows($result);
+        // display error and end page is no query results were returned
         if ($resultCheck < 1){
             echo 'The user does not exist. Return to forum <a href="index.php" />index</a>.<br/>';
             include_once "../footer.php";
             exit();
+
+            // i might  eventually make this redirect to the error page instead
+            // header("Location: ../error.php");
         }
-        // end redirect user away from category that does not exist
+
         ?>
 
 		<a action="action" onclick="window.history.go(-1); return false;">Return</a><br><br>
@@ -37,23 +46,16 @@
 		include_once "../includes/dbh.inc.php";
 		
         // get the user id from the url
-		$user_id = $_GET['id'];
+        // typecast data obtained from url for inject protection
+		$user_id = (int)$_GET['id'];
 
-        // datbase query for user information using id from url
+        // datbase query for user information using user id from url
 		$query = "SELECT * FROM users WHERE user_id=".$user_id;
 
 		// run query
 		$result= mysqli_query($conn, $query);
 
-        // redirect user if they try to view a user profile that does not exist 
-        $count = mysqli_num_rows($result);
-        if ($count < 1){
-            $path = $_SERVER['DOCUMENT_ROOT'];
-            $path .= "/error.php";
-            header("Location: $path");
-        }
-
-		// assign profile information to variables
+		// assign profile information in to variables
 		while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)){
 		$user_id = $row['user_id'];
 		$username = $row['username'];
@@ -71,13 +73,16 @@
         $condition3 = $row['condition3'];
         $last_viewed = $row['last_viewed'];
         $introduction = $row['introduction'];
+        $ip = $row['ip'];
 		}
 		?>
 
 		<?php echo '<h1>' . $username . '</h1><br>'?>
 
         <?php
-        $user_id = $_GET['id'];
+        // typecast data obtained from url for inject protection
+        $user_id = (int)$_GET['id'];
+        // query to obtain profile pic file name and whether it's approved for display on the forum or not
         $profile_pic = mysqli_query($conn, "SELECT * FROM profile_pics WHERE user_id = $user_id");
         
         while($row = mysqli_fetch_array($profile_pic, MYSQLI_ASSOC)){
@@ -88,6 +93,8 @@
         <div class = "profile_pic">
 
         <?php
+        // if the profile pic approved, then go ahead and display it to the user
+        // if not, then display the default profile pic file
         if(isset($approval)){
             if($approval == true){
             echo '<img src="../img/user_pics/'.$profilepic.'" >';
@@ -95,9 +102,58 @@
         } else echo '<img src="../img/user_pics/default.jpg" >';
         ?>
 
+        <?php 
+        // Attempt MySQL server connection
+        include_once "../includes/dbh.inc.php";
+        
+        // get the user id from the url
+        // typecast data obtained from url for inject protection
+        $user_id = (int)$_GET['id'];
+
+        // query to obtain users ip address in order to display if they are banned or not
+        $query = "SELECT ip FROM users WHERE user_id=".$user_id;
+        // run query
+        $result= mysqli_query($conn, $query);
+        // place ip in to a variable 
+        while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)){
+        $ip = $row['ip'];
+        }
+
+        // check and see if the users ip is in the banned user table or not 
+        $sql = "SELECT * FROM banned WHERE ip = '$ip'";
+        $result = $conn->query($sql);
+
+        if (mysqli_num_rows($result)!=0){
+        // display banned message on profile if they're banned
+            echo '<div class = "pm_link">';
+            echo 'Banned.<br/>';
+            echo '</div>';
+        }
+        ?>
+
+        <div class = "pm_link">
+            <a href="../new_conversation.php?uname=<?php echo $username; ?>" />Send PM</a>
+        </div>
+
+        <?php
+        if(isset($_SESSION['user_privilege'])){
+        if($_SESSION['user_privilege'] != "admin" || $_SESSION['user_privilege'] != "mod"){
+        ?>
+        <div class = "pm_link">
+            <a href="../ban_user.php?id=<?php echo $user_id; ?>" />Ban User</a>
+        </div>
+
+        <div class = "pm_link">
+            <a href="../unban_user.php?id=<?php echo $user_id; ?>" />unBan User</a>
+        </div>
+        <?php
+        }
+        }
+        ?>
+
         </div>
 		<!-- display user information in verticle table -->
-        <table id="horizontal" >
+        <table id="horizontal">
             <thead>
                 <tr>
                     <th colspan="3">First Name</th>
@@ -145,7 +201,7 @@
 
             <thead>
                 <tr>
-                    <th colspan="3">Primary Condition</th>
+                    <th colspan="3">Main Condition</th>
                 </tr>
                 <tr>
                     <th colspan="3">Country</th>
@@ -226,8 +282,7 @@
 </section>
 
 <?php
-// update last user viewed
-
+// update last logged in user who viewed this profile in the users table
 if(isset($_SESSION['username'])){
     $viewer = $_SESSION['username'];
     $sql = "UPDATE users SET last_viewed = ? WHERE user_id = ?";
@@ -235,6 +290,8 @@ if(isset($_SESSION['username'])){
     if (!mysqli_stmt_prepare($stmt, $sql)){
         // failed to update recently viewed
     } else {
+        // bind placeholders to data obtained from user submitted info from POST
+        // i = integer / d = double / s = string
         mysqli_stmt_bind_param($stmt, "sd", $viewer, $user_id);
         mysqli_stmt_execute($stmt);
     }
@@ -243,5 +300,6 @@ if(isset($_SESSION['username'])){
 ?>
 
 <?php
+    // include universal footer file
    include_once '../footer.php';
 ?>

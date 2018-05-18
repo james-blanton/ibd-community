@@ -1,4 +1,48 @@
 /* MY CODE */
+/* private message system */
+
+/* for use on forum edit and delete thread / post header */
+.edit_link {
+    float:right;padding-left:30px; text-align:left; 
+}
+
+.profile-inbox{
+    padding: 10px;
+    background-color: #e4e4e4;
+    border-bottom: 2px solid #01a3e0;
+    line-height: 25px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.conversations {
+    padding: 10px;
+    background-color: #e4e4e4;
+    border-bottom: 2px solid #01a3e0;
+    line-height: 25px;
+    margin-top: 10px;
+}
+
+.pm_link {
+    width: 100%;
+    float: left;
+    position: relative;
+    text-align: center;
+    border-top: 3px solid #05baff;
+    padding-top: 10px;
+    margin-top: 10px;
+    float:left;
+}
+
+.conversations-unread {
+    font-weight: bold;
+}
+
+.conversations a {
+    color:#01a3e0 !important;
+}
+/* end private message system */
+
 /* BEGIN WITH BASIC NECESSITIES */
 .main-wrapper {
     margin: 0 auto;
@@ -236,6 +280,7 @@ header nav ul li a {
     float: left;
     font-size: 50px; 
     color:white;
+    padding-left: 10px;
 }
 
 #mobile_icon a {
@@ -392,6 +437,11 @@ nav.banner-main{
 
 .pTitle a:hover {
     color:#bcf0ff;
+}
+
+#horizontal {
+    float: left;
+    width: 100%;
 }
 
 #horizontal th {
@@ -757,8 +807,8 @@ div.thread_posts_header, div.thread_views_header  {
 
 .thread_header a {
     color: #404040;
-    font-weight: bold;
-    text-transform: uppercase;
+    text-transform: unset;
+    font-weight: unset;
 }
 
 .thread_disc {
@@ -916,6 +966,15 @@ body > section > div > form > input[type="submit"] {
 }
 
 @media only screen and (max-width: 1050px) {
+    /* for use on forum edit and delete thread / post header */
+    .edit_link {
+    float:left;
+    padding-left:unset;
+    text-align:left; 
+    padding-bottom: 15px;
+    width:100%;
+    }
+
     #profile_intro {
     float:left;
     width:100%;

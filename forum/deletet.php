@@ -1,17 +1,24 @@
 <?php
+// set session if one isn't already set
 if (session_status() == PHP_SESSION_NONE) {
 	   session_start();
 }
 
+// check if user is logged in
+// redirect to error page if they are not
 if(!isset($_SESSION['username'])){
  	header("Location:../error.php");
 }
 ?>
 
 <?php
+// redirect user away from this page if they attempt to edit a thread that was not created by them
+	// Attempt MySQL server connection
 	include_once "../includes/dbh.inc.php";
-	$thread_id = $_GET['id'];
-	// redirect user away if they attempt to edit a thread that is not there's in this php block
+	// typecast data obtained from url for inject protection
+	$thread_id = (int)$_GET['id'];
+
+	// query to obtain the creator of the thread
 	$thread_owner = mysqli_query($conn,"
 	SELECT 
 	thread_id,
@@ -27,15 +34,21 @@ if(!isset($_SESSION['username'])){
 		$category_id = $row['category_id'];
 	}
 
-	if($_SESSION['username'] != $the_thread_owner){
-		if($_SESSION['user_privilege'] != "admin"){
-		$path = "../index.php";
-	 	header("Location: $path");
-	 	}
+	// check if logged in user is the owner of the thread, an admin or a forum moderator
+	// redirect to error page if they are not
+	if($_SESSION['username'] == $the_thread_owner){
+	}
+	elseif($_SESSION['user_privilege'] == "admin"){
+	}
+	elseif($_SESSION['user_privilege'] == "mod"){
+	}
+	else{
+	 	header("Location: ../error.php");
 	}
 ?>
 
 <?php
+	// include universal header file
 	include_once ('../header.php');
 ?>
 
@@ -46,17 +59,19 @@ if(!isset($_SESSION['username'])){
 		<hr/>
 
 		<?php
+		// Create link to navigate back to the threads's parent category
+		// we want to keep this echo here so that the return link stays above the error message display.
+		// This needs to be a constant so that it will still be available once we have deleted the thread.
 		define("CATEGORY_ID", $category_id);
 
-		// link to return to the live thread currently being edited
 		echo'
 		<a href="./category.php?id='.CATEGORY_ID.
 		'">Return</a><br/><br/>';
 		
 		?>
 
-		<!-- display deletion verification message to use under return link; pass 'yes' or 'no' response back to this page -->
 		<?php 
+		// display deletion verification message to use under return link; pass 'yes' or 'no' response back to this page 
 		if (isset($_GET['d'])){
 		} else { 
 		?>
@@ -70,26 +85,18 @@ if(!isset($_SESSION['username'])){
 		}?>
 
 		<?php
-		// BEGIN block for delete of thread
-
-		if(isset($_GET['d'])){ // $_GET['d'] is set when the user selects "yes" or "no" to whether they wish to delete the thread or not
-			$delete = $_GET['d']; // variable for whether they wish to delete the thread or not, given a value of "yes" or "no"
-			// BEGIN "if" for user clicking "yes" on the verification of whether they want to delete the thread or not
+		// $_GET['d'] is set when the user selects "yes" or "no" to whether they wish to delete the post or not. This value is either a "yes" or "no".
+		if(isset($_GET['d'])){ 
+			$delete = $_GET['d'];
+			// If the user clicking "yes" on the verification of whether they want to delete the post or not, then execute the following code to mark the post as deleted with a boolean flag of 1.
 			if($delete == 'yes'){ 
-				echo 'Commence delete. Click return to navigate back to the category.'; // meant to  display message to user, but they currently don't get to see this before the page redirects
-				$current_thread = $_GET['id'];
-				
-				// BEGIN GRAB CATEGORY ID TO RETURN USER TO AFTER THREAD IS DELETED
-				$current_category = "SELECT category_id FROM threads WHERE thread_id = ".$current_thread;
-				$result_category = mysqli_query($conn, $current_category);
+				echo 'Commence delete.'; 
+				// Typecast for extra security
+				$current_thread = (int)$_GET['id'];
 
-				while($row = mysqli_fetch_array($result_category, MYSQLI_ASSOC)){
-					$newURL = $row['category_id'];
-				}
-				// END GRAB CATEGORY ID TO RETURN USER TO AFTER THREAD IS DELETED
-
-				// query to delete thread with placeholder variable used for current thread id
-				$sql = "DELETE FROM threads WHERE thread_id = ?";
+				// query to soft-delete the post with boolean flag
+				// a placeholder variable used for current post id
+				$sql = "UPDATE threads SET deleted = 1 WHERE thread_id = ?";
 				
 				// error check for query
 				if (!$result = $conn->prepare($sql))
@@ -97,7 +104,8 @@ if(!isset($_SESSION['username'])){
 				    die('Query failed: (' . $con->errno . ') ' . $con->error);
 				}
 
-				// bind placeholder value and the thread id that the user is currently viewing
+				// bind placeholders to data obtained from user submitted info from POST
+				// i = integer / d = double / s = string
 				if (!$result->bind_param('i', $current_thread))
 				{
 				    die('Binding parameters failed: (' . $result->errno . ') ' . $result->error);
@@ -112,37 +120,41 @@ if(!isset($_SESSION['username'])){
 				// check if the delete query execution was a success ...
 				if ($result->affected_rows > 0)
 				{
+					//return user to category after a successful delete
+					echo $message = "Thread deletion successful.<br /><br /> <a href='./category.php?id=".CATEGORY_ID."'>Return to the category by clicking here.</a><br/><br/>";
+
 					$result->close();
 					$conn->close();
 					echo '
 						</div>
 						</section>
 					';
+					// include universal footer file and end the page
 					include_once '../footer.php';
 					exit();
 				}
 				else
 				{
-				    echo "Couldn't delete the thread ID."; // for when the query fails for any reason
+					// for when the query fails for any reason
+				    echo "Couldn't delete the thread ID."; 
 				}
 
-			} // END "if" for user clicking "yes" on the verification of whether they want to delete the thread or not
+			} // END if statement for selection "yes" to the deletion verification question.
 
 			// if user selects no to the question if whether they really wanted to delete the post or not, then display this:
 			elseif($delete == 'no'){
 				echo 'Stop delete. Click return if you wish to navigate away from thread deletion.';
 			}
 		}
-		// END block for delete of thread
 		?>
 
 		<?php
-		// BEGIN display the thread that the user is looking to delete
+		// prepare to display the thread that the user is looking to delete
 		if(isset($_GET['id'])){
-			// get thread id from the url
-			$current_thread = $_GET['id'];
+			// get post id typecast data obtained from url for inject protection
+			$current_thread = (int)$_GET['id'];
 
-			// query to display the post the user wishes to delete
+			// query to display the thread the user wishes to delete
 			$query_thread = " 
 			SELECT 
 			a.thread_id,
@@ -163,7 +175,7 @@ if(!isset($_SESSION['username'])){
 			AND thread_id = $current_thread
 			"; 
 			
-			// run query
+			// run query and place returned data in to variables
 			$result_thread = mysqli_query($conn, $query_thread);
 			 
 			while($row = mysqli_fetch_array($result_thread, MYSQLI_ASSOC)){
@@ -179,7 +191,7 @@ if(!isset($_SESSION['username'])){
 				$locked = $row['locked'];
 				$view_counter = $row['view_counter'];
 
-				// echo thread information
+				// dsplay the thread information to the user
 				echo 
 				'<div class = "thread_info"><div class="padding">';
 
@@ -193,7 +205,7 @@ if(!isset($_SESSION['username'])){
 				'</div></div>';
 			}
 		}
-		// END display the thread that the user is looking to delete
+
 		?>
 
 	</div>
@@ -201,5 +213,6 @@ if(!isset($_SESSION['username'])){
 
 
 <?php
+	// include universal footer file
 	include_once '../footer.php';
 ?>

@@ -126,8 +126,8 @@ include_once "includes/dbh.inc.php";
 				<?php 
 				$id = $_SESSION['user_id'];
 				if($current_dir == 'forum'){
-					echo '../edit_account.php?update='.$id;
-				} else {echo 'edit_account.php?update='.$id;}
+					echo '../account.php?update='.$id;
+				} else {echo 'account.php?update='.$id;}
 				?>
 
 				">
@@ -230,6 +230,7 @@ include_once "includes/dbh.inc.php";
 				<!-- DESKTOP NAVIGATION end login / signup forms ... nav-login div -->
 
 				<!-- DESKTOP NAVIGATION begin 'edit account' navigation ... nav-edit_account div -->
+
 				<div class="nav-edit_account">
 					<?php if(isset($_SESSION['username'])){  ?>
 					<a href = "
@@ -237,12 +238,12 @@ include_once "includes/dbh.inc.php";
 						<?php
 						$id = $_SESSION['user_id'];
 						if($current_dir == 'forum'){
-							$url= '../edit_account.php?update='.$id;
-						} else {$url= 'edit_account.php?update='.$id;}
+							$url= '../account.php?update='.$id;
+						} else {$url= 'account.php?update='.$id;}
 						echo $url
 						?>
 
-					 " >Edit Account</a>
+					 " >Account</a>
 					 <?php } ?>
 				</div> 
 				<!-- DESKTOP NAVIGATION end 'edit account' navigation ... nav-edit_account div -->
@@ -305,8 +306,9 @@ include_once "includes/dbh.inc.php";
 	<?php 
 	if($_GET['login'] == "success"){
 		echo 'Successfully logged in.';
-	} else if ($_GET['login'] == "out") {echo 'Logout successful.';}
-
+	} 
+	else if ($_GET['login'] == "out") {echo 'Logout successful.';}
+	else if ($_GET['login'] == "banned") {echo 'Banned. Email an admin if you feel we have made a mistake.';}
 	?>
 </div>
 <?php } ?>

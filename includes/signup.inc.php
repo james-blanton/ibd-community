@@ -1,7 +1,6 @@
 <?php
-/////////// ERROR CHECKS ////////////////
-
-// CHECK IF EMAIL ALREADY EXISTS
+// check if the email that the user is attempting to register with already exists in the database
+// reload the signup page and display an error message if it does already exist
 if (isset($_POST['submit']))
 {
 	include_once 'dbh.inc.php';
@@ -19,9 +18,9 @@ if (isset($_POST['submit']))
 	}
 
 } 
-// END CHECK IF EMAIL ALREADY EXISTS
 
-// CHECK IF USERNAME ALREADY EXISTS
+// check if the username that the user is attempting to register with already exists in the database
+// reload the signup page and display an error message if it does already exist
 if (isset($_POST['submit']))
 {
 	include_once 'dbh.inc.php';
@@ -38,42 +37,40 @@ if (isset($_POST['submit']))
 		exit();
 	}
 } 
-// END CHECK IF USERNAME ALREADY EXISTS
 
-/////////// REGISTER USER ///////////////
-
+// if both the username and the email are valid for registration, then begin the registration process
 if (isset($_POST['submit']))
 {
-	// database connection file
+	// Attempt MySQL server connection
 	include_once 'dbh.inc.php';
 
-	// injection protection escape input from form
+	// sql injection / xss attack prevention by escaping input sent by form submit
 	$first = mysqli_real_escape_string($conn, $_POST['first']);
 	$last = mysqli_real_escape_string($conn, $_POST['last']);
 	$email = mysqli_real_escape_string($conn, $_POST['email']);
 	$password = mysqli_real_escape_string($conn, $_POST['pass']);
 	$username = mysqli_real_escape_string($conn, $_POST['username']);
 
+	// verify that form inputs are not empty
+	// if the fields are empty, then reload the signup page and display an error
 	if(empty($first) || empty($last) || empty($email) || empty($password) || empty($username))
 	{
-		// REDIRECT IF USER DIDNT ENTER ONE OF THE VALUES
 		header('Location:../signup.php?sign=empty');
 		exit();
-
 	} else 
 
 	{		
-			// CHECK IF CHARACTERS ARE VALID FOR NAME
+			// check if the characters entered for the username field (first & last) are valid
+			// reload the signup page with an error if the characters are invalid
 			if(!preg_match("/^[a-zA-Z]*$/", $first) || !preg_match("/^[a-zA-Z]*$/", $last) )
 			{
 				header("Location:../signup.php?sign=iname");
 				exit();
-
 			} else 
 
 			{		
-
-					// CHECK IF EMAIL IS VALID
+					// validate the email entered by the user
+					// reload the signup page with an error if the email is invalid
 					if(!filter_var($email, FILTER_VALIDATE_EMAIL))
 					{
 						header("Location:../signup.php?sign=iemail");
@@ -81,9 +78,10 @@ if (isset($_POST['submit']))
 					} else
 
 					{		
-		      			// IF THEY DONT EXIST, INSERT NEW USER IN TO DATABASE
+		      			// if  the email is valid, then go ahead and continue on to inserting the new
+		      			// user in to the database
 
-						// hasing password
+						// hasing password for safe storage in the database
 						$hashed_pass = password_hash($password,PASSWORD_BCRYPT);
 						// insert user into database PREPARE STATEMENT
 						$sql = "INSERT INTO users (user_first, user_last, user_email, user_pass, username, date_joined) VALUES (?, ?, ?, ?, ?, ?);";
@@ -91,17 +89,18 @@ if (isset($_POST['submit']))
 						if(!mysqli_stmt_prepare($stmt, $sql)){
 							$message = "ERROR: Could not able to execute sql. " . mysqli_error($conn);
 						} else {
+							// set time zone before determining thse current EST (eastern time zone)
 							date_default_timezone_set("America/New_York");
 							$date = date('m/d/Y h:i:s a', time());
-							// bind the data to the placeholders in order to prepare for insert in to database
+							// bind placeholders to data obtained from user submitted info from POST
+							// i = integer / d = double / s = string
 							mysqli_stmt_bind_param($stmt, "ssssss", $first, $last, $email, $hashed_pass, $username, $date);
-							// run insert 
+							// run prepared database insertion
 							mysqli_stmt_execute($stmt);
 							$message = "Register successful.";
 							// pass sign=success for display of successful registration back to the registration page
 							header("Location: ../signup.php?sign=success");
 						}
-						
 
 						exit();
 					}
