@@ -144,6 +144,8 @@ if(is_numeric($_GET['id']) == FALSE){
         </div>
 
         <?php
+        // dont allow admins to be banned by mods
+        if($user_privilege != "admin"){
         if(isset($_SESSION['user_privilege'])){
         if($_SESSION['user_privilege'] != "admin" || $_SESSION['user_privilege'] != "mod"){
         ?>
@@ -155,6 +157,7 @@ if(is_numeric($_GET['id']) == FALSE){
             <a href="../unban_user.php?id=<?php echo $user_id; ?>" />unBan User</a>
         </div>
         <?php
+        }
         }
         }
         ?>
