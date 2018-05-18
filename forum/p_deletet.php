@@ -9,8 +9,16 @@ if(!isset($_SESSION['username'])){
 ?>
 
 <?php
+// verify that GET is numeric
+if(is_numeric($_GET['id']) == FALSE){
+	header("Location: ../error.php");
+	exit();
+}
+?>
+
+<?php
 	include_once "../includes/dbh.inc.php";
-	$thread_id = $_GET['id'];
+	$thread_id = (int)$_GET['id'];
 	// redirect user away if they attempt to edit a thread that is not there's in this php block
 	$thread_owner = mysqli_query($conn,"
 	SELECT 

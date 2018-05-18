@@ -1,3 +1,10 @@
+<?php
+// verify that GET is numeric
+if(is_numeric($_GET['id']) == FALSE){
+	header("Location: ../error.php");
+	exit();
+}
+?>
 
 <?php
 include_once "../header.php";

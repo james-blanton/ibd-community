@@ -26,7 +26,15 @@ include_once 'country.php';
 	// Attempt MySQL server connection
 	include_once "includes/dbh.inc.php";
 
-	$current_user = $_GET['update'];
+	// typecast data obtained from url for inject protection
+	$current_user = (int)$_GET['update'];
+
+	// verify that GET is numeric
+	if(is_numeric($_GET['update']) == FALSE){
+		header("Location: error.php");
+		exit();
+	}
+
 	// query to redirect user away if they attempt to edit an account that is not theirs
 	$update_user = mysqli_query($conn, "
 	SELECT 
@@ -34,6 +42,11 @@ include_once 'country.php';
 	FROM users
 	WHERE user_id = $current_user
 	");
+
+	if(mysqli_num_rows($update_user)===0){
+		header("Location: error.php");
+		exit();
+	}
 	 
 	// get the username for the account owner for as it relates to the user id obtained from the url       
 	while($row = mysqli_fetch_array($update_user, MYSQLI_ASSOC)){
@@ -126,7 +139,7 @@ if (isset($_POST['submit'])) {
 		} else {
 			// bind placeholders to data obtained from user submitted info from POST
 			// i = integer / d = double / s = string
-			mysqli_stmt_bind_param($stmt, "sssdssssssd", $first_name, $last_name, $email, $penpal, $birthday, $country, $condition1, $condition2, $condition3, $introduction, $id);
+			mysqli_stmt_bind_param($stmt, "sssissssssi", $first_name, $last_name, $email, $penpal, $birthday, $country, $condition1, $condition2, $condition3, $introduction, $id);
 			mysqli_stmt_execute($stmt);
 				
 			// reload variables for display in form once the update is complete
@@ -162,6 +175,7 @@ if (isset($_GET['update'])) {
 
 		?>
 
+		<?php echo "<h2>" .$row1['username']. "</h2>"; ?>
 		<form class='form' style='float:left;' action='account.php?update<?php echo "=".$update; ?>' method='post'>
 		<input class='input' type='hidden' name='user_id' value='<?php echo $row1["user_id"]; ?>' />
 		<br />

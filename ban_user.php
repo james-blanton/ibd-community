@@ -1,7 +1,7 @@
 <?php
 // set session if one isn't already set
 if (session_status() == PHP_SESSION_NONE) {
-	   session_start();
+	session_start();
 }
 
 // check if user is logged in
@@ -35,7 +35,12 @@ include_once ('header.php');
 				include 'includes/dbh.inc.php';
 
 				// get user id for who you wish to ban from url
-				$id = $_GET['id'];
+				$id = (int)$_GET['id'];
+				// verify that GET is numeric
+				if(is_numeric($_GET['id']) == FALSE){
+					header("Location: error.php");
+					exit();
+				}
 
 				// query to get users ip address from users table
 				$sql_ip = "SELECT ip, username FROM users WHERE user_id = $id";

@@ -4,13 +4,20 @@
 function fetch_conversation_summary(){
 // this  function will fetch all of the message subjects and other neccessary information from proper display in the users inbox
 	$dbServername= "localhost";
-	$db_username= "root";
-	$db_password= "";
-	$dbname= "ibd-community";
+	$db_username= "chblanton";
+	$db_password= "J!anie11841";
+	$dbname= "ibd_community";
 
 	$conn = mysqli_connect($dbServername, $db_username, $db_password, $dbname);
 
 	$user_id = $_SESSION['user_id'];
+
+	// verify that value is numeric
+	if(is_numeric($_SESSION['user_id']) == FALSE){
+		header("Location: ../error.php");
+		exit();
+	}
+
 
 	$sql = "SELECT
 		conversations.conversation_id,
@@ -61,9 +68,9 @@ function fetch_conversation_messages($conversation_id){
 	$conversation_id = (int)$conversation_id;
 
 	$dbServername= "localhost";
-	$db_username= "root";
-	$db_password= "";
-	$dbname= "ibd-community";
+	$db_username= "chblanton";
+	$db_password= "J!anie11841";
+	$dbname= "ibd_community";
 
 	$conn = mysqli_connect($dbServername, $db_username, $db_password, $dbname);
 
@@ -95,13 +102,20 @@ function fetch_conversation_messages($conversation_id){
 function update_conversation_last_view($conversation_id){
 // Sets the last view time to the current time for the given conversation
 	$dbServername= "localhost";
-	$db_username= "root";
-	$db_password= "";
-	$dbname= "ibd-community";
+	$db_username= "chblanton";
+	$db_password= "J!anie11841";
+	$dbname= "ibd_community";
 
 	$conn = mysqli_connect($dbServername, $db_username, $db_password, $dbname);
 
 	$conversation_id = (int)$conversation_id;
+
+	// verify that value is numeric
+	if(is_numeric($conversation_id) == FALSE){
+		header("Location: ../error.php");
+		exit();
+	}
+
 	date_default_timezone_set('US/Eastern');
 	$current_time = date('Y-m-d H:i:s');
 	$user =  $_SESSION['user_id'];
@@ -118,9 +132,9 @@ function update_conversation_last_view($conversation_id){
 function create_conversation($to_user_id, $subject, $body){
 // this function submits required information in to all three tables related to messages
 	$dbServername= "localhost";
-	$db_username= "root";
-	$db_password= "";
-	$dbname= "ibd-community";
+	$db_username= "chblanton";
+	$db_password= "J!anie11841";
+	$dbname= "ibd_community";
 
 	$conn = mysqli_connect($dbServername, $db_username, $db_password, $dbname);
 
@@ -144,12 +158,15 @@ function create_conversation($to_user_id, $subject, $body){
 	if(!mysqli_stmt_prepare($stmt, $sql)){
 		$message = "ERROR: Could not able to execute sql. " . mysqli_error($conn);
 	} else {
-		session_start();
+		if (session_status() == PHP_SESSION_NONE) {
+			session_start();
+		}
 		date_default_timezone_set('US/Eastern');
 		$date = date('Y-m-d H:i:s');
 		$from_id = $_SESSION['user_id'];
+
 		// bind the data to the placeholders in order to prepare for insert in to database
-		mysqli_stmt_bind_param($stmt, "dddss", $conversation_id, $from_id, $to_user_id, $date, $body);
+		mysqli_stmt_bind_param($stmt, "iiiss", $conversation_id, $from_id, $to_user_id, $date, $body);
 		// run insert execution
 		mysqli_stmt_execute($stmt);
 	}
@@ -164,8 +181,15 @@ function create_conversation($to_user_id, $subject, $body){
 		$sender_delete = 0;
 		$receiver_delete = 0;
 		$from_id = $_SESSION['user_id'];
+
+		// verify that value is numeric
+		if(is_numeric($_SESSION['user_id']) == FALSE){
+			header("Location: ../error.php");
+			exit();
+		}
+
 		// bind the data to the placeholders in order to prepare for insert in to database
-		mysqli_stmt_bind_param($stmt, "dddsdd", $conversation_id, $from_id, $to_user_id, $date, $receiver_delete, $sender_delete);
+		mysqli_stmt_bind_param($stmt, "iiisii", $conversation_id, $from_id, $to_user_id, $date, $receiver_delete, $sender_delete);
 		// run insert execution
 		mysqli_stmt_execute($stmt);
 	}
@@ -175,14 +199,27 @@ function create_conversation($to_user_id, $subject, $body){
 function validate_conversation_id($conversation_id){
 // checks to make sure that the user is a member of the given conversation
 	$dbServername= "localhost";
-	$db_username= "root";
-	$db_password= "";
-	$dbname= "ibd-community";
+	$db_username= "chblanton";
+	$db_password= "J!anie11841";
+	$dbname= "ibd_community";
 
 	$conn = mysqli_connect($dbServername, $db_username, $db_password, $dbname);
 
 	$conversation_id = (int)$conversation_id;
+
+	// verify that value is numeric
+	if(is_numeric($conversation_id) == FALSE){
+		header("Location: ../error.php");
+		exit();
+	}
+
 	$user_id = $_SESSION['user_id'];
+	// verify that value is numeric
+	if(is_numeric($_SESSION['user_id']) == FALSE){
+		header("Location: ../error.php");
+		exit();
+	}
+
 	$sql = "SELECT COUNT(1)
 			FROM conversation_members
 			WHERE conversation_id = $conversation_id
@@ -198,15 +235,21 @@ function validate_conversation_id($conversation_id){
 function add_conversation_message($conversation_id, $text){
 // adds a message to the given conversation
 	$dbServername= "localhost";
-	$db_username= "root";
-	$db_password= "";
-	$dbname= "ibd-community";
+	$db_username= "chblanton";
+	$db_password= "J!anie11841";
+	$dbname= "ibd_community";
 
 	$conn = mysqli_connect($dbServername, $db_username, $db_password, $dbname);
 
 	$conversation_id = (int)$conversation_id;
 	$text = htmlspecialchars(mysqli_real_escape_string($conn, $text));
 	$user_id = $_SESSION['user_id'];
+
+	if(is_numeric($_SESSION['user_id']) == FALSE){
+		header("Location: ../error.php");
+		exit();
+	}
+
 	date_default_timezone_set('US/Eastern');
 	$date = date('Y-m-d H:i:s');
 
@@ -219,7 +262,7 @@ function add_conversation_message($conversation_id, $text){
 		$date = date('Y-m-d H:i:s');
 		$from_id = $_SESSION['user_id'];
 		// bind the data to the placeholders in order to prepare for insert in to database
-		mysqli_stmt_bind_param($stmt, "ddss", $conversation_id, $from_id, $date, $text);
+		mysqli_stmt_bind_param($stmt, "iiss", $conversation_id, $from_id, $date, $text);
 		// run insert execution
 		mysqli_stmt_execute($stmt);
 	}
@@ -233,14 +276,19 @@ function delete_conversation($conversation_id){
 // have elected to delete the message, but the message will only be displayed for
 // the user who has not marked the message as deleted yet
 	$dbServername= "localhost";
-	$db_username= "root";
-	$db_password= "";
-	$dbname= "ibd-community";
+	$db_username= "chblanton";
+	$db_password= "J!anie11841";
+	$dbname= "ibd_community";
 
 	$conn = mysqli_connect($dbServername, $db_username, $db_password, $dbname);
 
 	$conversation_id = (int)$conversation_id;
 	$user_id = $_SESSION['user_id'];
+
+	if(is_numeric($_SESSION['user_id']) == FALSE){
+		header("Location: ../error.php");
+		exit();
+	}
 
 	// this select and the following update statement set the receiver_delete column to 1
 	// if the logged in user who clicked delete is the reciever of the message

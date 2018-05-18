@@ -12,6 +12,14 @@ if(!isset($_SESSION['username'])){
 ?>
 
 <?php
+// verify that GET is numeric
+if(is_numeric($_GET['id']) == FALSE){
+	header("Location: ../error.php");
+	exit();
+}
+?>
+
+<?php
 // redirect user away from this page if they attempt to edit a post that was not created by them
 	// Attempt MySQL server connection
 	include_once "../includes/dbh.inc.php";

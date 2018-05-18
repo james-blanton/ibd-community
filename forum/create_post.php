@@ -12,6 +12,14 @@ if(!isset($_SESSION['username'])){
 ?>
 
 <?php
+// verify that GET is numeric
+if(is_numeric($_GET['id']) == FALSE){
+	header("Location: ../error.php");
+	exit();
+}
+?>
+
+<?php
 include_once "../header.php";
 ?>
 
@@ -75,7 +83,7 @@ if (!empty($_POST['submit'])){
 		} else {
 			// bind placeholders to data obtained from user submitted info from POST
 			// i = integer / d = double / s = string
-			mysqli_stmt_bind_param($stmt, "sssd", $post_content, $post_date, $post_creator, $thread_id);
+			mysqli_stmt_bind_param($stmt, "sssi", $post_content, $post_date, $post_creator, $thread_id);
 			// run insert execution
 			mysqli_stmt_execute($stmt);
 			$message = "New post created!";
@@ -119,7 +127,7 @@ if (!empty($_POST['submit'])){
 					} else {
 						// bind placeholders to data obtained from user submitted info from POST
 						// i = integer / d = double / s = string
-						mysqli_stmt_bind_param($stmt, "dd", $updated_posts, $user_id);
+						mysqli_stmt_bind_param($stmt, "ii", $updated_posts, $user_id);
 						mysqli_stmt_execute($stmt);
 					}
 				 } // end while

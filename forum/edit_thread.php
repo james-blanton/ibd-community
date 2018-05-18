@@ -12,6 +12,14 @@ if(!isset($_SESSION['username'])){
 ?>
 
 <?php
+// verify that GET is numeric
+if(is_numeric($_GET['id']) == FALSE){
+	header("Location: ../error.php");
+	exit();
+}
+?>
+
+<?php
 	// Attempt MySQL server connection
 	include_once "../includes/dbh.inc.php";
 
@@ -138,7 +146,7 @@ if(!empty($_POST['thread_edit'])) {
 		} else {
 			// bind placeholders to data obtained from user submitted info from POST
 			// i = integer / d = double / s = string
-			mysqli_stmt_bind_param($stmt, "ssdddd", $thread_title, $thread_desc, $deleted, $category_id, $sticky, $thread_id);
+			mysqli_stmt_bind_param($stmt, "ssiiii", $thread_title, $thread_desc, $deleted, $category_id, $sticky, $thread_id);
 			mysqli_stmt_execute($stmt);
 
 			// update thread data variables so it will display correctly in the  form after submitting the form

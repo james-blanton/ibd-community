@@ -1,7 +1,7 @@
 <?php
 // set session if one isn't already set
 if (session_status() == PHP_SESSION_NONE) {
-	   session_start();
+	session_start();
 }
 
 // check if user is logged in
@@ -13,10 +13,15 @@ if(!isset($_SESSION['username'])){
 
 // check if logged in user is an admin or mod
 // redirect to error page if they are not
-if($_SESSION['user_privilege'] != "admin" || $_SESSION['user_privilege'] != "mod"){
- 	header("Location:error.php");
- 	exit();
+if($_SESSION['user_privilege'] == "admin"){
 }
+elseif($_SESSION['user_privilege'] == "mod"){
+}
+else{
+	 header("Location: error.php");
+	 exit();
+}
+
 ?>
 
 <?php
@@ -114,7 +119,7 @@ if (isset($_POST['submit'])) {
 		} else {
 			// bind placeholders to data obtained from user submitted info from POST
 			// i = integer / d = double / s = string
-			mysqli_stmt_bind_param($stmt, "dd", $approved, $id);
+			mysqli_stmt_bind_param($stmt, "ii", $approved, $id);
 			mysqli_stmt_execute($stmt);
 				
 			// reload variables for display in form once the update is complete

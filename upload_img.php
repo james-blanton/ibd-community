@@ -1,7 +1,7 @@
 <?php
 // set session if one isn't already set
 if (session_status() == PHP_SESSION_NONE) {
-	   session_start();
+	session_start();
 }
 
 // check if user is logged in
@@ -16,6 +16,12 @@ if(!isset($_SESSION['username'])){
 if (isset($_POST['submit'])){
 	// Typecast user's username for security purposes
 	$user_id = (int)$_GET['id'];
+
+	// verify that GET is numeric
+	if(is_numeric($_GET['id']) == FALSE){
+		header("Location: error.php");
+		exit();
+	}
 
 	// Not sure if it's better to get the user id from the url or from a session variable check
 	// $user_id = $_SESSION['user_id'];
@@ -69,6 +75,14 @@ if (isset($_POST['submit'])){
 								// set the time zone to eastern time before generating the current time
 								date_default_timezone_set("America/New_York");
 								$today = date("Y-m-d");
+
+								// check image mime type
+								$mimetype = mime_content_type($_FILES['file']['tmp_name']);
+								if(in_array($mimetype, array('image/jpeg', 'image/gif', 'image/png'))) {
+									// do nothing if mime type is correct
+								} else {
+								    header("Location:edit_avatar.php?id=".$user_id."&msg=mime");
+								}
 
 								// calculate the files width and height in pixels 
 								$image_info = getimagesize($fileTmp_name);

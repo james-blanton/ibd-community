@@ -18,6 +18,13 @@ if(!isset($_SESSION['username'])){
 	// get user id passed in url 
 	// ensure  that user id passed in url matches the user id of the active session
 	$current_user = $_GET['id'];
+
+	// verify that GET is numeric
+	if(is_numeric($_GET['id']) == FALSE){
+		header("Location: error.php");
+		exit();
+	}
+
 	$update_user = mysqli_query($conn, "
 	SELECT 
 	user_id

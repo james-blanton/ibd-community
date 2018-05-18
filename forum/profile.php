@@ -1,4 +1,12 @@
 <?php
+// verify that GET is numeric
+if(is_numeric($_GET['id']) == FALSE){
+    header("Location: ../error.php");
+    exit();
+}
+?>
+
+<?php
     // file includes list of countries in an array
     include_once "../country.php";
     // file includes list of conditions in an array
@@ -292,7 +300,7 @@ if(isset($_SESSION['username'])){
     } else {
         // bind placeholders to data obtained from user submitted info from POST
         // i = integer / d = double / s = string
-        mysqli_stmt_bind_param($stmt, "sd", $viewer, $user_id);
+        mysqli_stmt_bind_param($stmt, "si", $viewer, $user_id);
         mysqli_stmt_execute($stmt);
     }
 }

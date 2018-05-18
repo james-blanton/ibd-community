@@ -36,6 +36,12 @@ include_once ('header.php');
 				// typecast as integer datatype just incase (for security)
 				$id = (int)$_GET['id'];
 
+				// verify that GET is numeric
+				if(is_numeric($_GET['id']) == FALSE){
+					header("Location: error.php");
+					exit();
+				}
+
 				// Query to get users ip from users table
 				$sql_ip = "SELECT ip, username FROM users WHERE user_id = $id";
 				// Run query

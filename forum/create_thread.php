@@ -12,6 +12,14 @@ if(!isset($_SESSION['username'])){
 ?>
 
 <?php
+// verify that GET is numeric
+if(is_numeric($_GET['category_id']) == FALSE){
+	header("Location: ../error.php");
+	exit();
+}
+?>
+
+<?php
 // this php block redirects the user away from creating a thread for a category that does not exist
 if (isset($_GET['category_id'])){
 	// Attempt MySQL server connection
@@ -82,7 +90,7 @@ if (isset($_POST['submit'])){
 		} else {
 			// bind placeholders to data obtained from user submitted info from POST
 			// i = integer / d = double / s = string
-			mysqli_stmt_bind_param($stmt, "sssssss", $thread_title, $thread_desc, $thread_creator, $thread_date, $thread_reply_date, $last_user_posted, $category_id);
+			mysqli_stmt_bind_param($stmt, "ssssssi", $thread_title, $thread_desc, $thread_creator, $thread_date, $thread_reply_date, $last_user_posted, $category_id);
 			// run insert execution
 			mysqli_stmt_execute($stmt);
 

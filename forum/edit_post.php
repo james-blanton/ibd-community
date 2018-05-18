@@ -12,6 +12,14 @@ if(!isset($_SESSION['username'])){
 ?>
 
 <?php
+// verify that GET is numeric
+if(is_numeric($_GET['id']) == FALSE){
+	header("Location: ../error.php");
+	exit();
+}
+?>
+
+<?php
 	// Attempt MySQL server connection
 	include_once "../includes/dbh.inc.php";
 
@@ -125,7 +133,7 @@ if(!empty($_POST['post_edit'])) {
 		} else {
 			// bind placeholders to data obtained from user submitted info from POST
 			// i = integer / d = double / s = string
-			mysqli_stmt_bind_param($stmt, "sd", $post_content, $post_id);
+			mysqli_stmt_bind_param($stmt, "si", $post_content, $post_id);
 			mysqli_stmt_execute($stmt);
 
 			// update post content variable so it will display correctly in the form after submitting the form
