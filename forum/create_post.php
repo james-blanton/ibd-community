@@ -20,11 +20,38 @@ if(is_numeric($_GET['id']) == FALSE){
 ?>
 
 <?php
+// check if thread is locked
+if (isset($_GET['id'])){
+	// Attempt MySQL server connection
+	include '../includes/dbh.inc.php';
+
+	// get the thread id and whether it's locked or not
+	// typecast for security
+	$thread_id = (int)$_GET['id'];
+
+	// find out if this thread is locked or not
+	$select_current_thread = "SELECT thread_id, locked FROM threads WHERE thread_id = '$thread_id'";
+	
+	// execute query
+	$result = mysqli_query($conn, $select_current_thread);
+
+	while($row = $result->fetch_assoc()){
+		$locked = $row['locked'];
+	}
+
+	if($locked == TRUE){
+		$path = "../error.php";
+		header("Location: $path");
+	}
+
+}
+?>
+
+<?php
 include_once "../header.php";
 ?>
 
 <?php
-
 // this php block redirects the user away from creating a post for a thread that does not exist
 if (isset($_GET['id'])){
 	// get the thread id that we wish to place this new post in from the url
@@ -41,8 +68,7 @@ if (isset($_GET['id'])){
 	// redirect user if they try and create a post for a thread that does not exist
 	// aka the query returned no results
 	if ($resultCheck < 1){
-		$path = $_SERVER['DOCUMENT_ROOT'];
-		$path .= "/error.php";
+		$path = "../error.php";
 		header("Location: $path");
 	}
 }

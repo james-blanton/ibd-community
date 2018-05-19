@@ -108,7 +108,8 @@ if(isset($_GET['id'])) {
 	thread_desc,
 	deleted,
 	category_id,
-	sticky
+	sticky,
+	locked
 	FROM threads
 	WHERE thread_id = '$current_thread'
 	";
@@ -124,6 +125,7 @@ if(isset($_GET['id'])) {
 		$deleted = $row['deleted'];
 		$category_id = $row['category_id'];
 		$sticky = $row['sticky'];
+		$locked = $row['locked'];
 	}
 }
 
@@ -137,16 +139,17 @@ if(!empty($_POST['thread_edit'])) {
 		$deleted = htmlspecialchars (mysqli_real_escape_string($conn, $_POST['deleted']));
 		$category_id = htmlspecialchars (mysqli_real_escape_string($conn, $_POST['category_id']));
 		$sticky = htmlspecialchars (mysqli_real_escape_string($conn, $_POST['sticky']));
+		$locked = htmlspecialchars (mysqli_real_escape_string($conn, $_POST['locked']));
 
 		// begin prepare statement insert to protect against sql injection
-		$sql = "UPDATE threads SET thread_title = ?, thread_desc = ?, deleted = ?, category_id = ?, sticky = ? WHERE thread_id = ?";
+		$sql = "UPDATE threads SET thread_title = ?, thread_desc = ?, deleted = ?, category_id = ?, sticky = ?, locked = ? WHERE thread_id = ?";
 		$stmt = mysqli_stmt_init($conn);
 		if (!mysqli_stmt_prepare($stmt, $sql)){
 			echo $message = "Failed to edi thread.<br /><br />";
 		} else {
 			// bind placeholders to data obtained from user submitted info from POST
 			// i = integer / d = double / s = string
-			mysqli_stmt_bind_param($stmt, "ssiiii", $thread_title, $thread_desc, $deleted, $category_id, $sticky, $thread_id);
+			mysqli_stmt_bind_param($stmt, "ssiiiii", $thread_title, $thread_desc, $deleted, $category_id, $sticky, $locked, $thread_id);
 			mysqli_stmt_execute($stmt);
 
 			// update thread data variables so it will display correctly in the  form after submitting the form
@@ -157,6 +160,7 @@ if(!empty($_POST['thread_edit'])) {
 			$deleted= $_POST['deleted'];
 			$category_id = $_POST['category_id'];
 			$sticky = $_POST['sticky'];
+			$locked = $_POST['locked'];
 			echo $message = "Update successful.<br /><br />";
 		}
 	}
@@ -197,6 +201,13 @@ if(!empty($_POST['thread_edit'])) {
 		Sticky:
 		<select name='sticky' maxlength='75'>
 			<option value='<?php if($sticky==1){echo '1';}else{echo '0';} ?>'><?php if($sticky==1){echo 'YES';}else{echo 'NO';} ?></option>
+			<option value='1'>Yes</option>
+			<option value='0'>No</option>
+		</select><br/><br/>
+
+		Locked:
+		<select name='locked' maxlength='75'>
+			<option value='<?php if($locked==1){echo '1';}else{echo '0';} ?>'><?php if($locked==1){echo 'YES';}else{echo 'NO';} ?></option>
 			<option value='1'>Yes</option>
 			<option value='0'>No</option>
 		</select><br/><br/>

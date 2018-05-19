@@ -173,8 +173,10 @@ include_once "../header.php";
 		// back link to return to the category page
 		echo '<a href = "./category.php?id=' . $category_id . '" >Return</a><br><br>';
 
-		// create post pass thread id
+		// don't display reply if the thread is locked
+		if($locked == FALSE){
 		echo '<a href = "./create_post.php?id=' . $current_thread . '" >Create Post</a><br><br>';
+		} else { echo 'LOCKED<br><br>';}
 
 		// echo first post belonging to the thread only if the user is viewing the first page
 		// of the thread, which is determined by the pagination function. $_GET['p'] indicates what page is being viewed
