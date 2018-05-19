@@ -9,17 +9,18 @@ include_once ('header.php');
 		
 		<div class="index_intro" id="close">
 
-			<div class="ourVision_wrapper">
-				<div class="ourVision_tab">Our Vision</div>
-				<div class="ourVision_content">
+			<div class="full_box_container">
+				<div class="full_box_tab">Our Vision</div>
+				
+				<div class="full_box">
 					<div class="padding">
 					Aenean risus nisl, volutpat eget arcu ut, aliquam suscipit velit. Cras iaculis, turpis sed aliquet tincidunt, enim nisl hendrerit est, vitae semper mi nisl et ipsum. Aenean lacinia risus eget mi auctor ornare. Ut at pulvinar risus, iaculis placerat purus. Pellentesque fringilla quis dui ac consequat. Fusce viverra, ex in dictum aliquet, purus leo feugiat metus, blandit accumsan nisi turpis at ex. Suspendisse potenti. Nullam euismod tellus ante, sit amet aliquet augue tincidunt at. Donec a ipsum eu ex elementum malesuada. Phasellus euismod viverra mi, a auctor augue facilisis et. Fusce ut ullamcorper dolor. Vestibulum fermentum euismod nibh, sit amet elementum dui congue sed. Nunc accumsan turpis sodales lectus vestibulum, at interdum risus sollicitudin.
 					</div>
 				</div>
 
-				<div class="quickLinks_container">
-					<div class="quickLinks_tab">Quick Links</div>
-					<div class="quickLinks_content">
+				<div class="full_box_container_2">
+					<div class="full_box_tab_2">Quick Links</div>
+					<div class="full_box_2">
 						<ul>
 							<li><a href="#">Find A Doctor</a></li>
 							<li><a href="#">Symptoms</a></li>
@@ -32,7 +33,7 @@ include_once ('header.php');
 
 	  		</div>
 
-			<div class="ourVision_wrapper_tab">
+			<div class="full_box_container_tab">
 			</div>
 	  	</div>
 	  

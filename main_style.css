@@ -1,11 +1,4 @@
-/* MY CODE */
-/* private message system */
-
-/* for use on forum edit and delete thread / post header */
-.edit_link {
-    float:right;padding-left:30px; text-align:left; 
-}
-
+/* start private message system */
 .profile-inbox{
     padding: 10px;
     background-color: #e4e4e4;
@@ -43,7 +36,7 @@
 }
 /* end private message system */
 
-/* BEGIN WITH BASIC NECESSITIES */
+/* start basic necessities */
 .main-wrapper {
     margin: 0 auto;
     width: 100%;
@@ -106,23 +99,9 @@ input {
     padding-top: 165px;
 }
 
-/* scrollbar */
-/*
-body::-webkit-scrollbar {
-    width: .9em;
-}
- 
-body::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-}
- 
-body::-webkit-scrollbar-thumb {
-  background-color: darkgrey;
-  outline: 1px solid slategrey;
-}
-*/
+/* begin basic necessities */
 
-/* ALL HEADER NAVIGATION START */
+/* start header navigation */
 header nav {
     width: 100%;
     height: 60px;
@@ -148,6 +127,26 @@ header nav ul li a {
     color: white !important;
     font-weight: bold;
 }
+
+/* begin banner above navigation */
+.pTitle {
+    font-size: 40px;
+    padding: 10px;
+    height: 50px;
+    color: white;
+    font-variant: petite-caps;
+    position: relative;
+    line-height: 50px;
+}
+
+.pTitle a {
+    color:white;
+}
+
+.pTitle a:hover {
+    color:#bcf0ff;
+}
+/* end banner above navigation */
 
 #login_message {
     height: 35px;
@@ -322,8 +321,9 @@ nav.banner-main{
 #mobile_icon a {
     color:white;
 }
+/* end header navigation */
 
-/* BEGIN STICKY NAV BAR */
+/* start sticky navigation bar */
 .header {
     background-color: #f1f1f1;
     padding: 30px;
@@ -365,6 +365,16 @@ nav.banner-main{
     color: white;
 }
 
+#navbar > div.nav-login > a {
+    padding: 0px;
+    float: right;
+    width: 80px;
+    text-align: center;
+}
+
+#navbar a:hover{
+    background-color: #26c3ff;
+}
 
 .sticky {
     position: fixed;
@@ -377,88 +387,9 @@ nav.banner-main{
     padding-top: 60px;
 }
 
-/* END STICKY NAV BAR */
+/* end sticky navigation bar */
 
-#navbar > div.nav-login > a {
-    padding: 0px;
-    float: right;
-    width: 80px;
-    text-align: center;
-}
-
-#navbar a:hover{
-    background-color: #26c3ff;
-}
-
-.content {
-  padding: 16px;
-}
-
-.index_intro {
-    width: 100%;
-    height: 650px;
-    border: 1px dashed #05baff;
-    border-bottom: 2px solid #05baff;
-    position: relative;
-    padding: 0;
-    margin: 0;
-    background-color: #e4f7ff;
-    background-image: url(img/slide1.jpg);
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-}
-
-.full_box_container_tab {
-    position: absolute;
-    left: 50%;
-    z-index: 50;
-    width: 140px;
-    margin-left: -70px;
-    background-color: #01a3e0;
-    text-align: center;
-    bottom: 0;
-    height: 20px;
-}
-
-.pTitle {
-    font-size: 40px;
-    padding: 10px;
-    height: 50px;
-    color: white;
-    font-variant: petite-caps;
-    position: relative;
-    line-height: 50px;
-}
-
-.pTitle a {
-    color:white;
-}
-
-.pTitle a:hover {
-    color:#bcf0ff;
-}
-
-#horizontal {
-    float: left;
-    width: 100%;
-}
-
-#horizontal th {
-    background-color: #c9f0ff;
-    border-bottom: 1px solid #404040;
-    padding: 5px;
-}
-
-#horizontal > tbody > tr > td {
-    border-left: 3px solid #05baff;
-    border-bottom: 1px solid #404040;
-    padding: 5px;
-    padding-left: 20px;
-    min-height: 15px;
-}
-
-/* dropdown nav conditions start */
+/* dropdown navigation for medical conditions start */
 .dropdown .dropbtn {
     float: left;
     display: block;
@@ -544,11 +475,49 @@ body > section > div > div > div > a:nth-child(1){
 body > section > div > div > div > a:nth-child(4){
     border-right: 0px;
 }
-/* dropdown nav conditions end */
+/* dropdown navigation for medical conditions end */
 
-/* ALL HEADER NAVIGATION END */
+/* start body content related css */
+.content {
+  padding: 16px;
+}
 
-/* BEGIN CENTRAL BODY CONTENT */
+.index_intro {
+    width: 100%;
+    height: 650px;
+    border: 1px dashed #05baff;
+    border-bottom: 2px solid #05baff;
+    position: relative;
+    padding: 0;
+    margin: 0;
+    background-color: #e4f7ff;
+    background-image: url(img/slide1.jpg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+/* begin css for profile tables */
+#horizontal {
+    float: left;
+    width: 100%;
+}
+
+#horizontal th {
+    background-color: #c9f0ff;
+    border-bottom: 1px solid #404040;
+    padding: 5px;
+}
+
+#horizontal > tbody > tr > td {
+    border-left: 3px solid #05baff;
+    border-bottom: 1px solid #404040;
+    padding: 5px;
+    padding-left: 20px;
+    min-height: 15px;
+}
+/* end css for profile tables */
+
 .main-container {
     width: 100%;
     height: -webkit-fill-available;
@@ -609,9 +578,9 @@ body > section > div > div > div > a:nth-child(4){
     width: 100%;
     position: relative;
 }
-/* END  CENTRAL BODY CONTENT */
+/* end body content related css */
 
-/* FOOTER BEGIN */
+/* begin footer content css */
 #footer {
     width: 100%;
     height: 180px;
@@ -718,9 +687,9 @@ body > section > div > div > div > a:nth-child(4){
 #mobile_footer a {
     color:white;
 }
-/* FOOTER END */
+/* end footer content css */
 
-/* FORUM STUFF START */
+/* begin forum related css */
 #pagination_links{
     float:left;
     width:100%;
@@ -788,6 +757,12 @@ div.user_avatar {
     display: block;
 }
 
+#category_count {
+    float: left;
+    padding-top: 10px;
+    width:100%;
+}
+
 .thread_header {
     float:left;
     padding-bottom: 10px;
@@ -814,30 +789,6 @@ div.thread_posts_header, div.thread_views_header  {
 .thread_disc {
     float: left;
     padding-bottom: 20px;
-}
-
-div.response_post_header {
-    float: left;
-    width: 100%;
-    background-color: #b1d0e0;
-    border: 1px dotted;
-    border-bottom: 0px;
-}
-
-div.response_post_content {
-    float: left;
-    margin-bottom: 20px;
-    width: 100%;
-    background-color: #f6fcff;
-    border: 1px dotted;
-}
-
-.post_content {
-    float:left;
-    padding-bottom: 10px;
-    padding-top: 5px;
-    width: 100%;
-    border-bottom: 1px dashed;
 }
 
 .thread_description {
@@ -932,20 +883,45 @@ body > section > div > form > input[type="submit"] {
     padding-bottom: 20px; float: left; width: 100%;
 }
 
-#category_count {
-    float: left;
-    padding-top: 10px;
-    width:100%;
+/* for use on forum edit and delete thread / post header */
+.edit_link {
+    float:right;padding-left:30px; text-align:left; 
 }
-/* FORUM STUFF END */
 
-/* ADMIN STUFF */
+div.response_post_header {
+    float: left;
+    width: 100%;
+    background-color: #b1d0e0;
+    border: 1px dotted;
+    border-bottom: 0px;
+}
+
+div.response_post_content {
+    float: left;
+    margin-bottom: 20px;
+    width: 100%;
+    background-color: #f6fcff;
+    border: 1px dotted;
+}
+
+.post_content {
+    float:left;
+    padding-bottom: 10px;
+    padding-top: 5px;
+    width: 100%;
+    border-bottom: 1px dashed;
+}
+
+/* end forum related css */
+
+/* begin admin only area css */
 #pic_approval {
     padding: 15px;
     float: left;
     border: 1px solid black;
     margin-left: 15px;
 }
+/* end admin only area css */
 
 /* MOBILE DEVICES START */
 @media only screen and (max-width: 1355px) {
@@ -1027,7 +1003,7 @@ body > section > div > form > input[type="submit"] {
     }
 
     .main-wrapper {
-        /*this accounts for the content shift when you go to moble */
+        /*this accounts for the content shift when you go to mobile */
         padding-top: 90px;
     }
 
