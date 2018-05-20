@@ -24,12 +24,6 @@ include_once "../header.php";
 		// typecast data obtained from url for inject protection 
 		$current_thread = (int)$_GET['id']; 
 
-		// verify that GET is numeric
-		if(is_numeric($_GET['id']) == FALSE){
-			header("Location: error.php");
-			exit();
-		}
-
 		// display message if user navigates to category that doesnt exist, include footer, end page
 		$select_current_thread = "SELECT thread_id FROM threads WHERE thread_id = '$current_thread' AND deleted = 0";
 
